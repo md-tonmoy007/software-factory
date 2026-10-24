@@ -258,8 +258,26 @@ For every invocation in this command:
    at the very start of the pipeline.
 2. If the step is a skippable phase (anything from Heimdal onward), ask
    the user to confirm before invoking it, and accept "skip this one" as a
-   valid answer — if they skip, say so plainly and move to the next step
-   without running the skipped agent.
+   valid answer — if they skip, say so plainly, record the skip (see
+   "Recording a skipped phase" below), and move to the next step without
+   running the skipped agent.
+
+### Recording a skipped phase
+
+Skipping a phase means that phase's artifact (e.g. `brainstorm-report-ai.md`
+if Sherlock was skipped) will never exist at `<path>`. A downstream agent
+that goes looking for it and simply finds it missing cannot tell a genuine
+gap apart from the user having chosen to skip that phase — treat the two
+differently: when you invoke the next agent after a skip, explicitly tell
+it, in plain language, which phase(s) were skipped and that the user chose
+to skip them (not that something went wrong). Carry that same note forward
+to every later agent in the sequence, not just the very next one, since a
+report two phases downstream may still need to explain the gap in its own
+output. An agent told about a skip should say so plainly in its own
+reports ("the brainstorm phase was skipped at the user's request, so this
+report proceeds without ranked candidates to compare against") rather than
+silently proceeding as if the artifact simply doesn't exist, or erroring
+on the missing file.
 3. Invoke the agent, carrying forward conversational context (resolved
    path, road, prior reports, anything already decided) rather than making
    the agent re-derive or re-ask for it.

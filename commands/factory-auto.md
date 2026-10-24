@@ -31,6 +31,22 @@ agent returns question(s) instead of a final report, relay them to the
 user, get the answer, and resume the same agent (not a fresh dispatch)
 until it produces its final report.
 
+**Only heimdal may use this relay in auto mode.** Autonomous means no
+pause for the user mid-pipeline, so **heimdal (inquiry) is the only step
+in this mode allowed to ask the user anything** — inquiry is the one phase
+where the pipeline cannot reasonably guess what the user wants, so it gets
+a real exchange. Every other interactive agent (hodor, aragorn, sherlock,
+askeladd) must proceed without asking the user anything: when dispatching
+them in this mode, explicitly tell each one it is running under
+`/factory-auto` and must make its own best call on anything it would
+otherwise ask about, rather than returning a question. **Askeladd
+specifically must skip its own interactive debate entirely in this mode:**
+instead of debating with the user, adopt sherlock's top-ranked brainstorm
+recommendation directly as the discussion's outcome, and write both
+discussion reports noting plainly that the interactive debate was skipped
+under auto mode and the result reflects brainstorm's top recommendation
+as-is.
+
 ## Which steps always run
 
 Every step below always runs — Hodor, Aragorn, and every phase from
