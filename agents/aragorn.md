@@ -52,6 +52,14 @@ whole system or project, start to finish).
    descriptive, filesystem-safe slug for the feature or system in
    question).
 
+   Before finalizing that name, list the existing sibling folders already
+   under `folderName` (a plain `Glob`/`Read` directory listing) and check
+   your chosen name against them. If it collides exactly with an existing
+   folder, or is confusingly similar (e.g. a trivial rename, pluralization,
+   or synonym of an existing one), pick a clearly distinct name instead, or
+   ask the user to disambiguate — do not silently create a folder that
+   could be mistaken for one that already exists.
+
 4. **State the decision and the resolved path**, then hand off to Heimdal
    with that resolved folder path so Heimdal can continue the work. Do not
    do Heimdal's work yourself — your job ends at the handoff.
