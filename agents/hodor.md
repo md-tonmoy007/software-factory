@@ -38,6 +38,8 @@ If they said yes to gitignore, add the folder name as a line to the project's `.
 
 **If it's already there:** read it and reuse the values silently. Don't ask the setup questions again, don't mention the file to the user unless something's wrong with it.
 
+**If it's already there but malformed:** before trusting it, validate that it parses as JSON and contains the required keys documented above (at minimum `folderName`). If it fails to parse, or is missing a required key, tell the user plainly that the existing `.fellowship/config.json` is malformed or incomplete, then re-run the same first-run setup flow described above (ask the two setup questions, write a fresh config) as if the file were missing.
+
 ## Second: triage the request
 
 Decide: is this request trivial or non-trivial?
