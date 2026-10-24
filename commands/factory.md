@@ -14,8 +14,7 @@ before invoking the next agent. For any phase (not the routing agents —
 see "Which steps always run" below), the user may say "skip this one" (or
 equivalent) and you move to the next step without invoking that agent. You
 never auto-advance through the whole pipeline — confirmation is required at
-every single handoff, every time, including inside a nested feature run on
-workflow-road.
+every single handoff, every time.
 
 ## User-input relay protocol (shared mechanism)
 
@@ -130,16 +129,20 @@ off, you know the road and the resolved `<path>`. Branch:
 
 - **Phase-road** → run the phase-road sequence below once, rooted at
   `<path>` = `<folder-name>/<phase-name>/`.
-- **Workflow-road** → run the system-level sequence first, then the
-  nested phase-road sequence per feature. See "Workflow-road" below.
+- **Workflow-road** → run the system-level sequence only. See
+  "Workflow-road" below. Implementing any individual feature happens
+  later, as its own separate phase-road run.
 
 ## The phase-road sequence (phases 1–8)
 
-This is the core sequence. It runs exactly once for a phase-road request.
-On workflow-road it also runs — nested, at a different path — once per
-feature identified by the system-level plan (see below). Every step here
-is a phase: ask for confirmation after the previous step finishes, before
-invoking the next one, and allow "skip this one" for any of them.
+This is the core sequence. It runs exactly once for a phase-road request,
+or once for workflow-road's own system-level pass (steps 1–5 only — see
+"Workflow-road" below). It also runs, independently and later, whenever
+the user (or you, on their instruction) starts a fresh phase-road request
+rooted at one of the feature paths a system-level plan identified. Every
+step here is a phase: ask for confirmation after the previous step
+finishes, before invoking the next one, and allow "skip this one" for any
+of them.
 
 1. **heimdal** (inquiry) — writes `<path>/inquiry-report-human.md` and
    `<path>/inquiry-report-ai.md`.
@@ -164,13 +167,13 @@ invoking the next one, and allow "skip this one" for any of them.
    odysseus when running at the feature level. Writes
    `<path>/plans/plan-human.md` and `<path>/plans/plan-ai.md`.
 
-   **Only continue to steps 6–8 below when this sequence is a phase-road
-   run that actually implements something** — i.e. plain phase-road, or a
-   nested per-feature run under workflow-road. When this sequence is
+   **Only continue to steps 6–8 below when this is a phase-road request**
+   — a standalone feature, or a later run started against one of the
+   feature paths a system-level plan identified. When this sequence is
    workflow-road's own system-level pass (steps 1–5 at the system level,
-   producing the architecture/phase breakdown), stop after odin's plan and
-   go to "Workflow-road" below instead — there is no system-level
-   implementation step; implementation happens per feature.
+   producing the high-level design and phase breakdown), stop after
+   odin's plan and go to "Workflow-road" below instead — workflow-road
+   never implements anything itself.
 
 6. **l** (Pass 1: writes tests against the plan).
 7. **gru** (implement, dispatches minions via the fellowship:opencode-subagent
@@ -182,60 +185,41 @@ After step 8, the phase-road sequence for this `<path>` is complete.
 
 ## Workflow-road
 
-Workflow-road runs the phase-road sequence's steps 1–5 **once at the
-system level**, under `<path>` = `<folder-name>/<system-name>/`, using
-**hermione** (not salander) and **odin** (not odysseus) for steps 2 and 5.
-This produces the overall architecture / phase breakdown plan
-(`<path>/plans/plan-human.md`, `<path>/plans/plan-ai.md`), identifying the
-individual features the system decomposes into.
+Workflow-road runs the phase-road sequence's steps 1–5 **once, at the
+system level only**, under `<path>` = `<folder-name>/<system-name>/`,
+using **hermione** (not salander) and **odin** (not odysseus) for steps 2
+and 5. This produces the overall architecture / high-level design and
+phase breakdown plan (`<path>/plans/plan-human.md`,
+`<path>/plans/plan-ai.md`), identifying the individual features the
+system decomposes into — their names, scope, and dependency order.
 
-Then, for **each feature** identified in that system-level plan, run the
-**full** phase-road sequence (all 8 steps, using salander and odysseus for
-steps 2 and 5) nested under
-`<folder-name>/<system-name>/<phase-name>/` — one `<phase-name>` per
-feature. Take the ordered feature list (and each feature's `<phase-name>`)
-directly from the system-level `plan-ai.md`'s explicit ordered feature
-list — do not re-derive or re-order it yourself.
+**Workflow-road stops there.** It does not go deep into any individual
+feature, and it does not run the phase-road sequence per feature itself.
+Steps 6–8 (L Pass 1, Gru, L Pass 2) never run at the system level, and no
+nested per-feature run is launched automatically. Once odin's plan is
+written, report it to the user — the features it identified, their
+resolved `<folder-name>/<system-name>/<phase-name>/` paths, and the
+recommended order — and stop. Implementing a given feature in depth is a
+separate, later action: the user (or you, on their explicit instruction)
+invokes `/factory` or one of the direct-phase commands against that
+feature's own path, same as any standalone phase-road request.
 
-**Pass the parent system path down.** When invoking heimdal, salander, or
-odysseus for a feature nested under a system, explicitly tell that agent
-the parent system path (`<folder-name>/<system-name>/`) alongside the
-feature's own nested `<path>`, so it can read the system-level
-`plans/plan-ai.md` (and, for salander, also the system-level
-`research-report-ai.md`) as upstream context before proceeding, rather
-than starting blind.
+### After the system-level plan: confirmation
 
-- These nested feature runs execute **strictly sequentially** — never in
-  parallel, never overlapping. Finish one feature's full phase-road run
-  (through its own L Pass 2) before starting the next feature's run.
-- The confirmation-pause-between-phases behavior described above applies
-  **within** each nested phase-road run (you still pause and ask before
-  heimdal, before research, before sherlock, and so on, for every
-  feature). There is **no extra pause between features** in the
-  sequence — once a feature's L Pass 2 finishes, move straight to
-  invoking heimdal for the next feature's nested run (still subject to
-  the normal per-phase confirm/skip within that run).
-
-### After all nested features finish: system-complete confirmation
-
-Once every feature identified in the system-level plan has completed its
-own full nested phase-road run, ask the user directly whether the system
-is complete. Their answer branches:
+Once odin's plan is written and reported, ask the user directly whether
+the system-level design is complete. Their answer branches:
 
 - **"No, start over"** (the rare case) — this is a full reset. **Before
-  re-invoking hermione/sherlock at the system level, or re-running any
-  feature from heimdal,** archive the existing report files rather than
-  deleting them: move `inquiry-qa.md`, every `*-report-human.md` /
-  `*-report-ai.md` pair, and the `plans/` folder (at the system level, and
-  at each nested feature level that will be redone) aside into a
-  timestamped subfolder, e.g. `<path>/.archive-<timestamp>/`. This gives
-  askeladd and heimdal a genuinely clean slate so they don't mistake leftover
-  files for a re-entry. Only after archiving, redo the system level from
-  scratch starting at **hermione** (research) and **sherlock**
-  (brainstorm) — i.e. re-run the system-level sequence from step 2 onward
-  (research, brainstorm, discussion, plan), and from there, re-run the
-  nested per-feature phase-road runs again for whatever the redone
-  system-level plan now identifies.
+  re-invoking hermione/sherlock at the system level,** archive the
+  existing report files rather than deleting them: move `inquiry-qa.md`,
+  every `*-report-human.md` / `*-report-ai.md` pair, and the `plans/`
+  folder aside into a timestamped subfolder, e.g.
+  `<path>/.archive-<timestamp>/`. This gives askeladd and heimdal a
+  genuinely clean slate so they don't mistake leftover files for a
+  re-entry. Only after archiving, redo the system level from scratch
+  starting at **hermione** (research) and **sherlock** (brainstorm) —
+  i.e. re-run the system-level sequence from step 2 onward (research,
+  brainstorm, discussion, plan).
 - **"No, but let's discuss further"** (the common case) — re-invoke
   **askeladd** at the system level. Do not duplicate its carry-forward
   logic yourself: askeladd will detect the existing
@@ -244,10 +228,10 @@ is complete. Their answer branches:
   step" above). After askeladd produces its updated discussion report,
   continue the system-level sequence forward from **odin** (the
   system-level plan likely needs to change in light of the further
-  discussion), then re-run the nested per-feature phase-road runs for
-  whatever features the updated plan identifies.
+  discussion), then report the updated plan and ask again.
 - **"Yes, complete"** — the workflow-road run is done. Report completion
-  to the user and stop.
+  to the user and stop. Implementing any feature is a separate run the
+  user starts when they're ready.
 
 ## How to run each step in practice
 
@@ -292,14 +276,13 @@ on the missing file.
 ## What you must not do
 
 - Do not skip the confirmation pause between any two phases, on either
-  road, including between nested feature runs' internal phases.
+  road.
 - Do not let the user skip Hodor or Aragorn — only phases (Heimdal
   onward) are skippable.
-- Do not run nested feature phase-road runs in parallel — they are
-  strictly sequential.
-- Do not insert an extra confirmation pause between one feature's
-  completion and the next feature's start on workflow-road — the pauses
-  belong within each nested run, not between them.
+- Do not run L, Gru, or L Pass 2 as part of a workflow-road system-level
+  pass — workflow-road stops after odin's plan; implementation only
+  happens in a phase-road run (standalone, or started later against one
+  of the identified feature paths).
 - Do not re-implement askeladd's re-entry/carry-forward detection logic in
   this command — just re-invoke askeladd and let it handle it.
 - Do not use hermione/odin at the feature level or salander/odysseus at
