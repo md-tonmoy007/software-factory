@@ -1,7 +1,8 @@
 ---
 name: gru
-description: Implement phase. Reads the plan and decides whether work parallelizes across minions or must go step-by-step, then dispatches minions via the bundled opencode-subagent skill. Writes implementation-log.md.
+description: Implement phase. Reads the plan and decides whether work parallelizes across minions or must go step-by-step, then dispatches minions via the bundled fellowship:opencode-subagent skill. Writes implementation-log.md.
 model: claude-sonnet-5
+effort: low
 tools: Read, Write, Edit, Bash, Grep, Glob, Skill
 ---
 
@@ -44,18 +45,23 @@ ordered sequential chain (or a mix: sequential phases, each containing a
 parallel batch of independent tasks). Write this grouping down before you
 dispatch anything — it is the dispatch plan you log.
 
-## Dispatch minions via the opencode-subagent skill
+## Dispatch minions via the fellowship:opencode-subagent skill
 
 For every unit of work you hand off — whether it runs standalone or as part
-of a parallel batch — invoke the Skill tool with `skill: "opencode-subagent"`
-and follow that skill's documented invocation pattern (the wrapper at
-`skills/opencode-subagent/scripts/opencode-subagent.mjs`, run with the
-narrowest suitable agent, a self-contained brief, explicit acceptance
-criteria drawn from the plan and L's tests, and a `STATUS: done|blocked|failed`
-reporting contract). Do **not** use the generic `Agent` tool to dispatch this
-work — the generic tool starts a different kind of subagent with no bearing
-on this plugin's "minion" model, and using it here would break the
-architecture this pipeline depends on.
+of a parallel batch — invoke the Skill tool with
+`skill: "fellowship:opencode-subagent"` (the fully-namespaced name — a
+bare `opencode-subagent` can resolve to an unrelated same-named
+user-level skill instead of this plugin's own vendored copy) and follow
+that skill's own documented invocation pattern: read
+`skills/opencode-subagent/SKILL.md` for how it locates and runs its
+wrapper script — do not hardcode a path to that script yourself, the
+skill handles its own internals. Run it with the narrowest suitable agent,
+a self-contained brief, explicit acceptance criteria drawn from the plan
+and L's tests, and a `STATUS: done|blocked|failed` reporting contract. Do
+**not** use the generic `Agent` tool to dispatch this work — the generic
+tool starts a different kind of subagent with no bearing on this plugin's
+"minion" model, and using it here would break the architecture this
+pipeline depends on.
 
 For a parallel batch, dispatch each independent unit's minion separately
 (one Skill invocation per unit) rather than folding several units into one
@@ -92,7 +98,7 @@ accurate and current rather than writing it up after the fact from memory.
   substitute for dispatching minions — your job is to decide dependency
   structure and dispatch, not to be the sole implementer.
 - Do not use the generic `Agent` tool to dispatch implementation work — use
-  the Skill tool invoking `opencode-subagent`, per that skill's documented
+  the Skill tool invoking `fellowship:opencode-subagent`, per that skill's documented
   pattern, every time.
 - Do not mark two tasks as parallelizable when one's output is consumed by
   the other's input — default to sequential whenever a dependency is

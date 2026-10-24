@@ -19,6 +19,18 @@ the very end of a workflow-road run (see "After all nested features
 finish" below) — that is not a pause between phases, it is the terminal
 check the design mandates after all features finish, and it still happens.
 
+## User-input relay protocol
+
+Hodor, aragorn, heimdal, sherlock, and askeladd are interactive agents
+dispatched as subagents; they cannot hold a live back-and-forth with the
+user on their own. This command follows the same "User-input relay
+protocol" and the same "Resuming an already-resolved path" / system-level
+detection rule defined once in `commands/factory.md` — see those sections
+there rather than this file restating them. In short: if a dispatched
+agent returns question(s) instead of a final report, relay them to the
+user, get the answer, and resume the same agent (not a fresh dispatch)
+until it produces its final report.
+
 ## Which steps always run
 
 Every step below always runs — Hodor, Aragorn, and every phase from
@@ -99,7 +111,7 @@ proceeds immediately into the next with no pause and no skip option.
    implementation step; implementation happens per feature.
 
 6. **l** (Pass 1: writes tests against the plan).
-7. **gru** (implement, dispatches minions via the opencode-subagent
+7. **gru** (implement, dispatches minions via the fellowship:opencode-subagent
    skill) — writes `<path>/implementation-log.md`.
 8. **l** (Pass 2: evaluates Gru's implementation) — writes
    `<path>/test-report.md`.
@@ -119,7 +131,17 @@ Then, for **each feature** identified in that system-level plan, run the
 **full** phase-road sequence (all 8 steps, using salander and odysseus for
 steps 2 and 5) nested under
 `<folder-name>/<system-name>/<phase-name>/` — one `<phase-name>` per
-feature.
+feature. Take the ordered feature list (and each feature's `<phase-name>`)
+directly from the system-level `plan-ai.md`'s explicit ordered feature
+list — do not re-derive or re-order it yourself.
+
+**Pass the parent system path down.** When invoking heimdal, salander, or
+odysseus for a feature nested under a system, explicitly tell that agent
+the parent system path (`<folder-name>/<system-name>/`) alongside the
+feature's own nested `<path>`, so it can read the system-level
+`plans/plan-ai.md` (and, for salander, also the system-level
+`research-report-ai.md`) as upstream context before proceeding, rather
+than starting blind.
 
 - These nested feature runs execute **strictly sequentially** — never in
   parallel, never overlapping. Finish one feature's full phase-road run
@@ -137,13 +159,21 @@ is complete. This is the one point in this command where you stop and ask
 — it is the terminal check the design mandates after all features finish,
 not a pause between phases. Their answer branches:
 
-- **"No, start over"** (the rare case) — this is a full reset. Go back to
-  the system level and redo it from scratch starting at **hermione**
-  (research) and **sherlock** (brainstorm) — i.e. re-run the system-level
-  sequence from step 2 onward (research, brainstorm, discussion, plan),
-  and from there, re-run the nested per-feature phase-road runs again for
-  whatever the redone system-level plan now identifies. Once the user has
-  answered, the rest of this proceeds immediately with no further pauses.
+- **"No, start over"** (the rare case) — this is a full reset. **Before
+  re-invoking hermione/sherlock at the system level, or re-running any
+  feature from heimdal,** archive the existing report files rather than
+  deleting them: move `inquiry-qa.md`, every `*-report-human.md` /
+  `*-report-ai.md` pair, and the `plans/` folder (at the system level, and
+  at each nested feature level that will be redone) aside into a
+  timestamped subfolder, e.g. `<path>/.archive-<timestamp>/`. This gives
+  askeladd and heimdal a genuinely clean slate so they don't mistake
+  leftover files for a re-entry. Only after archiving, redo the system
+  level from scratch starting at **hermione** (research) and **sherlock**
+  (brainstorm) — i.e. re-run the system-level sequence from step 2 onward
+  (research, brainstorm, discussion, plan), and from there, re-run the
+  nested per-feature phase-road runs again for whatever the redone
+  system-level plan now identifies. Once the user has answered, the rest
+  of this proceeds immediately with no further pauses.
 - **"No, but let's discuss further"** (the common case) — re-invoke
   **askeladd** at the system level immediately. Do not duplicate its
   carry-forward logic yourself: askeladd will detect the existing

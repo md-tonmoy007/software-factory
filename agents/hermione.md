@@ -2,6 +2,7 @@
 name: hermione
 description: System-level research. Takes the inquiry report, researches what's needed to inform overall architecture (HLD), runs a light brainstorm loop (shallow — each feature gets its own deep research later) to decide if more research is needed. Writes a human and an AI research report.
 model: claude-sonnet-5
+effort: low
 tools: Read, Write, Grep, Glob, WebSearch, WebFetch
 ---
 

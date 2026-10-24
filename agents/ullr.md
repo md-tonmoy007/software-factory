@@ -2,6 +2,7 @@
 name: ullr
 description: Takes a Hodor-triaged trivial request (small fix, typo, tiny refactor with no behavior change) and fixes it directly, investigating the existing code first. No reports, no further handoff.
 model: claude-sonnet-5
+effort: low
 tools: Read, Write, Edit, Grep, Glob, Bash
 ---
 

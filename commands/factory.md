@@ -17,6 +17,75 @@ never auto-advance through the whole pipeline — confirmation is required at
 every single handoff, every time, including inside a nested feature run on
 workflow-road.
 
+## User-input relay protocol (shared mechanism)
+
+Five agents in this pipeline are interactive by design: **hodor**,
+**aragorn**, **heimdal**, **sherlock**, and **askeladd**. Each of them may
+need to ask the user something mid-task (Hodor's first-run setup
+questions, Aragorn's road question, Heimdal's inquiry questions,
+Sherlock's follow-up questions, Askeladd's debate). But every one of these
+agents runs as a **subagent dispatch**: it executes once and returns a
+single final message — it cannot hold a live back-and-forth with the user
+the way this top-level command can.
+
+The mechanism that makes this work, used by all five agents and by every
+command file that invokes them (`factory.md`, `factory-auto.md`, and every
+`commands/factory-<phase>.md` direct-phase command):
+
+1. When the dispatched agent needs to ask the user something, it returns
+   its question(s) as its result and **stops** — it does not guess, does
+   not fabricate an answer, and does not invent a plausible-sounding
+   response on the user's behalf.
+2. The main session (you, running this command) relays those exact
+   questions to the user, verbatim or as close to verbatim as makes sense,
+   and waits for the user's answer.
+3. The main session then **resumes the same agent** — the same
+   subagent/session that asked the question, not a fresh dispatch that has
+   lost the agent's in-progress state — with the user's answer.
+4. This repeats, possibly across several rounds, until the agent has
+   everything it needs and produces its actual final report(s) (its
+   written files and its closing message to you).
+
+Every reference elsewhere in this command, in `factory-auto.md`, and in
+the direct-phase commands to "invoke heimdal," "invoke sherlock," "invoke
+askeladd," "invoke hodor," or "invoke aragorn" means: dispatch it, and if
+it comes back with a question instead of a final report, relay the
+question, get the answer, resume the same agent, and repeat until you have
+its final report. Do not re-describe this mechanism in those other files —
+they reference this section instead.
+
+## Resuming an already-resolved path (shared convention)
+
+Before invoking Hodor/Aragorn fresh to resolve `<path>`, check in this
+order:
+
+1. **Conversational context first.** If a `<path>` was already resolved
+   earlier in this same conversation (not a fresh disk read — the actual
+   session context), reuse it. Do not re-run Hodor/Aragorn to re-derive
+   something you already have.
+2. **A user-supplied hint second.** If the user supplied an argument or
+   path hint when invoking the slash command (e.g. `/factory-research
+   my-feature`), use that to locate or build `<path>` under the configured
+   `folderName`.
+3. **Otherwise, ask.** List the existing folders under the configured
+   `folderName` (from `.fellowship/config.json`) and ask the user which one
+   to use, or whether to start a new one. Do not silently invent a new
+   folder name via a fresh Aragorn run when the user might have meant an
+   existing one.
+
+Every other command file in this plugin (`factory-auto.md` and every
+`commands/factory-<phase>.md` direct-phase command) follows this same
+three-step rule rather than restating it — they reference this section.
+
+### Detecting system-level vs. standalone folders
+
+A folder under `folderName` is **system-level** (a workflow-road system
+with nested features) if it directly contains a `plans/` folder **and**
+has subfolders that themselves contain their own `inquiry-qa.md` (i.e., it
+has nested features). Otherwise, it is a **standalone phase-road folder**.
+Use plain `Read`/`Glob` file-existence checks to apply this rule; every
+other command file references this rule rather than restating it.
+
 ## Which steps always run vs. which can be skipped
 
 - **Hodor** and **Aragorn** always run. They are triage/routing, not
@@ -104,7 +173,7 @@ invoking the next one, and allow "skip this one" for any of them.
    implementation step; implementation happens per feature.
 
 6. **l** (Pass 1: writes tests against the plan).
-7. **gru** (implement, dispatches minions via the opencode-subagent
+7. **gru** (implement, dispatches minions via the fellowship:opencode-subagent
    skill) — writes `<path>/implementation-log.md`.
 8. **l** (Pass 2: evaluates Gru's implementation) — writes
    `<path>/test-report.md`.
@@ -124,7 +193,17 @@ Then, for **each feature** identified in that system-level plan, run the
 **full** phase-road sequence (all 8 steps, using salander and odysseus for
 steps 2 and 5) nested under
 `<folder-name>/<system-name>/<phase-name>/` — one `<phase-name>` per
-feature.
+feature. Take the ordered feature list (and each feature's `<phase-name>`)
+directly from the system-level `plan-ai.md`'s explicit ordered feature
+list — do not re-derive or re-order it yourself.
+
+**Pass the parent system path down.** When invoking heimdal, salander, or
+odysseus for a feature nested under a system, explicitly tell that agent
+the parent system path (`<folder-name>/<system-name>/`) alongside the
+feature's own nested `<path>`, so it can read the system-level
+`plans/plan-ai.md` (and, for salander, also the system-level
+`research-report-ai.md`) as upstream context before proceeding, rather
+than starting blind.
 
 - These nested feature runs execute **strictly sequentially** — never in
   parallel, never overlapping. Finish one feature's full phase-road run
@@ -143,12 +222,20 @@ Once every feature identified in the system-level plan has completed its
 own full nested phase-road run, ask the user directly whether the system
 is complete. Their answer branches:
 
-- **"No, start over"** (the rare case) — this is a full reset. Go back to
-  the system level and redo it from scratch starting at **hermione**
-  (research) and **sherlock** (brainstorm) — i.e. re-run the system-level
-  sequence from step 2 onward (research, brainstorm, discussion, plan),
-  and from there, re-run the nested per-feature phase-road runs again for
-  whatever the redone system-level plan now identifies.
+- **"No, start over"** (the rare case) — this is a full reset. **Before
+  re-invoking hermione/sherlock at the system level, or re-running any
+  feature from heimdal,** archive the existing report files rather than
+  deleting them: move `inquiry-qa.md`, every `*-report-human.md` /
+  `*-report-ai.md` pair, and the `plans/` folder (at the system level, and
+  at each nested feature level that will be redone) aside into a
+  timestamped subfolder, e.g. `<path>/.archive-<timestamp>/`. This gives
+  askeladd and heimdal a genuinely clean slate so they don't mistake leftover
+  files for a re-entry. Only after archiving, redo the system level from
+  scratch starting at **hermione** (research) and **sherlock**
+  (brainstorm) — i.e. re-run the system-level sequence from step 2 onward
+  (research, brainstorm, discussion, plan), and from there, re-run the
+  nested per-feature phase-road runs again for whatever the redone
+  system-level plan now identifies.
 - **"No, but let's discuss further"** (the common case) — re-invoke
   **askeladd** at the system level. Do not duplicate its carry-forward
   logic yourself: askeladd will detect the existing

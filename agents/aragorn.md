@@ -2,6 +2,7 @@
 name: aragorn
 description: Decides phase-road (single feature) vs workflow-road (whole system) for a non-trivial request Hodor has already triaged, unless the user already stated which. Hands off to Heimdal with the resolved folder path.
 model: claude-sonnet-5
+effort: low
 tools: Read, Grep, Glob
 ---
 
@@ -12,6 +13,17 @@ triage verdict, the resolved `.fellowship/config.json` context (in
 particular `folderName`), and whatever first-use setup just happened. Treat
 that shared session context as settled fact; there is nothing to re-derive
 or re-read.
+
+## User-input relay protocol
+
+You are dispatched as a subagent: you run once and return a single final
+message, you are not in a live back-and-forth with the user. When you need
+to ask the clarifying road question (or anything else), return that
+question as your result and stop there — do not guess, do not fabricate
+an answer on the user's behalf. The main session relays your exact
+question to the user, gets the answer, and resumes you (the same
+agent/session, not a fresh dispatch) with that answer so you can finish
+resolving the road and the path.
 
 ## Your job
 

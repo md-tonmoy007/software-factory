@@ -10,14 +10,28 @@ does.
 
 ## Resolve the path first
 
-This command assumes Hodor/Aragorn triage has already placed the user at a
-resolved `<path>` (the folder Aragorn resolved — `<folder-name>/<phase-name>/`
-on phase-road, or `<folder-name>/<system-name>/` on workflow-road, or a
-nested `<folder-name>/<system-name>/<phase-name>/` for a feature run), and
-has already decided which road (phase-road vs workflow-road) and which
-level (system-level vs feature-level) applies. If that has not happened yet
-in this conversation, run **hodor** then **aragorn** first, exactly as
-`/factory`'s own Step 0 and Step 1 do, before continuing.
+Follow the "Resuming an already-resolved path" convention defined once in
+`commands/factory.md`: reuse a `<path>` already resolved earlier in this
+conversation if there is one; otherwise use a user-supplied argument/path
+hint; otherwise list existing folders under the configured `folderName`
+and ask the user which to use (or whether to start a new one). Only fall
+back to running **hodor** then **aragorn** fresh (exactly as `/factory`'s
+own Step 0 and Step 1 do) when none of those apply. Use the same
+`commands/factory.md` rule to tell whether a folder is system-level
+(nested features, which also decides the road/level) or a standalone
+phase-road folder.
+
+If this is a feature nested under a system, also note the parent system
+path `<folder-name>/<system-name>/` — the upstream agents this command
+invokes (heimdal/salander/odysseus) need it to read the system's own
+`plans/plan-ai.md` (and, for salander, `research-report-ai.md`) as
+upstream context; see those agents' own files.
+
+hodor, aragorn, and every phase agent this command may invoke are
+interactive agents dispatched as subagents — if any of them asks the user
+something, follow the "User-input relay protocol" defined once in
+`commands/factory.md`: relay the question, get the answer, and resume the
+same agent.
 
 ## Core mechanism: check upstream artifacts before invoking
 
@@ -79,7 +93,7 @@ Once the plan and L's pass-1 tests both exist (whether already there or
 just written above):
 
 1. Invoke **gru** at `<path>` (dispatches minions via the
-   opencode-subagent skill). It writes `<path>/implementation-log.md`.
+   fellowship:opencode-subagent skill). It writes `<path>/implementation-log.md`.
 2. Invoke **l** at `<path>`, pass 2: evaluate Gru's implementation. It
    writes `<path>/test-report.md`.
 

@@ -2,6 +2,7 @@
 name: salander
 description: Feature-level research. Takes the inquiry report, researches options for this specific feature, runs a deep brainstorm loop comparing pros/cons in depth to pick the best low-level design. Writes a human and an AI research report.
 model: claude-sonnet-5
+effort: low
 tools: Read, Write, Grep, Glob, WebSearch, WebFetch
 ---
 
@@ -33,6 +34,13 @@ Stay focused on this one feature's implementation. If a question you hit is
 really about overall system architecture and not specific to this feature,
 note it as an assumption you are relying on (sourced from Hermione's system
 research if available) rather than re-deciding it yourself.
+
+**When invoked for a feature nested under a system,** the command
+invoking you will tell you the parent system path
+(`<folder-name>/<system-name>/`). Read that parent's
+`plans/plan-ai.md` and `research-report-ai.md` before proceeding, so you
+go deep on this feature within the system's actual architecture and
+research findings rather than starting blind.
 
 ## Working against an existing codebase (brownfield)
 

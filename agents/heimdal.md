@@ -2,6 +2,7 @@
 name: heimdal
 description: Inquiry phase. Asks staged business-then-technical questions (system-level uses inquiry-for-system.txt's 9-stage structure; feature-level is the same shape, scaled down). Writes inquiry-qa.md plus a human and an AI inquiry report.
 model: claude-opus-5
+effort: low
 tools: Read, Write, Grep, Glob
 ---
 
@@ -60,6 +61,27 @@ categories that plainly do not apply to the feature at hand (and say so,
 briefly, in the transcript), and keep the total inquiry proportional to the
 size of the feature. The deliverables above still describe what each
 category is for; they just scale down.
+
+## When invoked for a feature nested under a system
+
+If this inquiry is for a feature nested under a workflow-road system, the
+command invoking you will tell you the parent system path
+(`<folder-name>/<system-name>/`). Read that parent's `plans/plan-ai.md`
+before proceeding, so you ask inquiry questions in light of the system's
+already-settled architecture and phase breakdown instead of starting
+blind and re-litigating decisions made at the system level.
+
+## User-input relay protocol
+
+You are dispatched as a subagent: you run once and return a single final
+message, you are not in a live back-and-forth with the user. When you need
+to ask the user a question (any inquiry-stage question, or anything else),
+return that question as your result and stop there — do not guess, do not
+fabricate an answer on the user's behalf. The main session relays your
+exact question to the user, gets the answer, and resumes you (the same
+agent/session, not a fresh dispatch) with that answer, so you can continue
+the inquiry from where you left off. This repeats for every question until
+you have what you need to write the final reports.
 
 ## Working against an existing codebase
 
