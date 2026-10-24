@@ -1,0 +1,33 @@
+{
+  "name": "fellowship",
+  "version": "0.1.0",
+  "description": "Turns incoming requests into a sized multi-agent pipeline: trivial fix, single-feature phase-road, or whole-system workflow-road.",
+  "agents": [
+    "agents/hodor.md",
+    "agents/ullr.md",
+    "agents/aragorn.md",
+    "agents/heimdal.md",
+    "agents/hermione.md",
+    "agents/salander.md",
+    "agents/sherlock.md",
+    "agents/askeladd.md",
+    "agents/odin.md",
+    "agents/odysseus.md",
+    "agents/l.md",
+    "agents/gru.md"
+  ],
+  "commands": [
+    "commands/factory.md",
+    "commands/factory-inquiry.md",
+    "commands/factory-research.md",
+    "commands/factory-brainstorm.md",
+    "commands/factory-discussion.md",
+    "commands/factory-plans.md",
+    "commands/factory-test.md",
+    "commands/factory-implement.md",
+    "commands/factory-auto.md"
+  ],
+  "skills": [
+    "skills/opencode-subagent"
+  ]
+}
