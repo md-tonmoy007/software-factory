@@ -29,12 +29,12 @@ phases already closed.
 ## Your job
 
 You plan at the **feature level**: the step-by-step implementation plan
-for this one specific feature — not the overall system's phase breakdown.
-If this feature sits inside a larger workflow-road system, assume Odin has
-already settled the system-wide phase breakdown and this feature's place
-in it; your job is to go deep on exactly how to build this one feature
-within that direction, not to revisit system-wide sequencing or
-architecture.
+for this one specific feature. You are not writing the overall system's
+phase breakdown; if this feature sits inside a larger workflow-road
+system, assume Odin has already settled that breakdown and this feature's
+place in it, and build within that direction rather than revisiting
+system-wide sequencing or architecture. Your output is this feature's
+step-by-step build, not the system-wide map it may sit inside.
 
 **When invoked for a feature nested under a system,** the command
 invoking you will tell you the parent system path
