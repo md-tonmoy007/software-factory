@@ -37,25 +37,43 @@ fi
 
 check_key() {
   local key="$1"
+  local key_line_num
   local value
-  # Match a top-level "key: value" line, allowing leading whitespace.
-  value="$(printf '%s\n' "$frontmatter" | grep -E "^[[:space:]]*${key}:" | head -n1)"
 
-  if [[ -z "$value" ]]; then
+  # Find the line number of a top-level "key:" line, allowing leading whitespace.
+  key_line_num="$(printf '%s\n' "$frontmatter" | grep -nE "^[[:space:]]*${key}:" | head -n1 | cut -d: -f1)"
+
+  if [[ -z "$key_line_num" ]]; then
     echo "validate-agent-frontmatter.sh: $file: missing key '${key}'" >&2
     return 1
   fi
 
-  # Strip "key:" prefix and surrounding whitespace/quotes to check for emptiness.
-  value="${value#*:}"
+  local key_line
+  key_line="$(printf '%s\n' "$frontmatter" | sed -n "${key_line_num}p")"
+
+  # Strip "key:" prefix and surrounding whitespace/quotes to check for a same-line value.
+  value="${key_line#*:}"
   value="$(echo "$value" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' -e "s/^['\"]//" -e "s/['\"]\$//")"
 
-  if [[ -z "$value" ]]; then
-    echo "validate-agent-frontmatter.sh: $file: key '${key}' is empty" >&2
-    return 1
+  if [[ -n "$value" ]]; then
+    return 0
   fi
 
-  return 0
+  # No same-line value: check for a YAML block-list value on the following
+  # indented "- " lines, e.g.:
+  #   tools:
+  #     - Read
+  #     - Write
+  local next_line_num=$((key_line_num + 1))
+  local next_line
+  next_line="$(printf '%s\n' "$frontmatter" | sed -n "${next_line_num}p")"
+
+  if [[ "$next_line" =~ ^[[:space:]]+-[[:space:]]*.+ ]]; then
+    return 0
+  fi
+
+  echo "validate-agent-frontmatter.sh: $file: key '${key}' is empty" >&2
+  return 1
 }
 
 for key in name description model tools; do
