@@ -1,0 +1,18 @@
+Goal: i want to build a plugin for claude code, it should be much more like everything
+  claude code plugin that has skills and agents to perform some stuffs.
+
+  Tasks: i want to build a software factory. before starting any project or adding feature to
+  existing project we will braekdown any feature request in phases.
+  phases : inquiry -> research -> brainstorm -> discussion -> plans -> implementation -> test
+  -> evaluate
+
+  if user asks to build a complex project then the workflow should be like this ->
+  inquiry -> research and brainstorm -> discussion -> plans -> build the phases ->
+  confirmation --(yes)-- finsih --(else)-- discussion and come to conclusion.
+  
+  in short : phases are for each breakdown feature and workflow for entire system.
+  so here is the we need the decision agent (this agent's name is Aragorn). His work is to decide what the user asked will go to phase road or workflow road (if not explicitly asked)
+  
+  now deep into each part of the workflow first. 
+  
+  1. inquiry: first start with a lot of question (good amount of question makes good amount of context) these question should have phases. Based on the system asked for prepare the question (Heimdal) will be ask by the agent. these phases include - business phase question (what are the business requirements), 
