@@ -14,7 +14,20 @@ opencode `run` is the non-interactive entry point. It is a full agent, not a she
 `<skill-dir>` below means the absolute directory containing this `SKILL.md`, as reported by your harness. In Claude Code use `${CLAUDE_SKILL_DIR}`. If the harness does not expose it, locate it once:
 
 ```bash
-SKILL_DIR=$(dirname "$(find "$HOME/.config/opencode" "$HOME/.claude" "$HOME/.codex" "$HOME/.agents" "$HOME/.openclaw" "$HOME/.hermes" "$HOME/.config/kilo" -path '*/opencode-subagent/SKILL.md' 2>/dev/null | head -n 1)")
+SKILL_MATCHES=$(find "$HOME/.config/opencode" "$HOME/.claude" "$HOME/.codex" "$HOME/.agents" "$HOME/.openclaw" "$HOME/.hermes" "$HOME/.config/kilo" -path '*/opencode-subagent/SKILL.md' 2>/dev/null)
+if [ -z "$SKILL_MATCHES" ]; then
+  echo "opencode-subagent: no SKILL.md found under any known harness config dir (~/.config/opencode, ~/.claude, ~/.codex, ~/.agents, ~/.openclaw, ~/.hermes, ~/.config/kilo). Install the skill under one of these, or set SKILL_DIR manually." >&2
+  exit 1
+fi
+# The search roots above are already listed most-likely-first, so take the
+# first match as the deterministic pick when several installs exist, and
+# say so explicitly instead of silently picking whichever `find` happened
+# to return first.
+SKILL_DIR=$(dirname "$(echo "$SKILL_MATCHES" | head -n 1)")
+if [ "$(echo "$SKILL_MATCHES" | wc -l)" -gt 1 ]; then
+  echo "opencode-subagent: multiple SKILL.md installs found; using $SKILL_DIR (first by search-root priority). Other candidates:" >&2
+  echo "$SKILL_MATCHES" | tail -n +2 | sed 's/^/  - /' >&2
+fi
 ```
 
 ## Rule 0: prefer the wrapper
