@@ -1,6 +1,6 @@
 ---
 name: memory
-description: Single source of truth for the Fellowship plugin's target-project memory layout, wiki entry schema, two-stage write gate, secrets-scrubbing procedure, and the deferred graphify extension point. Invoked as fellowship:memory by agents/mimir.md (the sole writer) and read-side by Salander, Gru, L, and Ullr.
+description: Single source of truth for the Fellowship plugin's target-project memory layout, wiki entry schema, two-stage write gate, secrets-scrubbing procedure, and the deferred graphify extension point. Invoked as fellowship:memory by agents/mimir.md (the sole writer) and read-side by Hermione, Salander, Gru, L, and Ullr.
 ---
 
 # fellowship:memory
@@ -25,18 +25,18 @@ episodes — what went wrong, how it was actually solved. It is deliberately
 ## Who reads, who writes
 
 - **Mimir** (`agents/mimir.md`) is the sole writer. It runs terminally:
-  after Ullr on the trivial path, and after L Pass 2 / Gru on the full
-  pipeline. It never runs mid-pipeline.
-- **Salander, Gru, L, Ullr** are the only readers in v1 (self-service: each
+  after Ullr on the trivial path, and after L Pass 2 / Gru on the small and
+  feature lanes, and only when the main session's cheap screen finds a Stage 1
+  signal (see `commands/factory.md`). It never runs mid-pipeline.
+- **Hermione, Salander, Gru, L, Ullr** are the only readers in v1 (self-service: each
   decides for itself, at its own point of need, whether to consult the
   wiki — there is no upfront digest and no centrally-injected recall).
-  Seven other agents (`heimdal, hermione, sherlock, askeladd, odin,
-  odysseus, code-explorer`) are deferred readers — not wired to this skill
+  Five other agents (`heimdal, askeladd, odin, odysseus,
+  code-explorer`) are deferred readers — not wired to this skill
   in v1, widen later if useful.
 - **Hodor** scaffolds the directory and the gitignore exemption at
   target-project setup time (see `agents/hodor.md`) but performs zero
   memory reads itself — that's a setup action, not a reader capability.
-- **Aragorn** has no role here at all.
 
 ## Directory layout
 
@@ -53,8 +53,10 @@ Inside the **target project** (never this plugin repo):
 `<target>/.fellowship/memory/` is the one subtree inside `.fellowship/`
 that is **exempted from `.gitignore`** — it travels with, and is committed
 to, the target project's own git history, even though the rest of
-`.fellowship/` (run folders, `config.json`) stays gitignored. Hodor
-carves out this exemption at first-run setup (`agents/hodor.md`).
+`.fellowship/` (run folders, `config.json`) stays gitignored. Hodor keeps
+this exemption in place on every run (`agents/hodor.md`), using `.fellowship/*`
+plus `!.fellowship/memory/`, because git can't re-include anything under a
+directory that is itself ignored.
 
 Do not confuse this with `graphify`'s own `--wiki` generator output
 (`<target>/graphify-out/wiki/`) — that is a regenerated, structural
@@ -106,7 +108,10 @@ Readers find entries via `Grep`/`Glob` over `index.md` and `events/*.md`
 
 ## Two-stage write gate
 
-Mimir runs this gate every time it's dispatched, before writing anything.
+Mimir runs this gate every time it's dispatched, before writing anything. The
+main session applies Stage 1 first as a cheap screen, so it only dispatches
+Mimir when a signal exists. Mimir still re-checks it, since it's cheap and the
+source files are authoritative.
 
 **Stage 1 — mechanical candidate screen.** An episode is a *candidate*
 (proceed to Stage 2) if any of these hold, read straight from

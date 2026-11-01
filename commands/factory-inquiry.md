@@ -14,9 +14,8 @@ Follow the "Resuming an already-resolved path" convention defined once in
 `commands/factory.md`: reuse a `<path>` already resolved earlier in this
 conversation if there is one; otherwise use a user-supplied argument/path
 hint; otherwise list existing folders under the configured `folderName`
-and ask the user which to use (or whether to start a new one). Only fall
-back to running **hodor** then **aragorn** fresh (exactly as `/factory`'s
-own Step 0 and Step 1 do) when none of those apply. Use the same
+and ask the user which to use (or whether to start a new one). Only fall back to running **hodor** fresh (exactly as `/factory`'s own Step 0
+does) when none of those apply. Use the same
 `commands/factory.md` rule to tell whether a folder is system-level
 (nested features) or a standalone phase-road folder.
 
@@ -25,22 +24,22 @@ system-level per that same rule), also note the parent system path
 `<folder-name>/<system-name>/` — heimdal needs it to read the system's
 `plans/plan-ai.md` as upstream context (see `agents/heimdal.md`).
 
-Both hodor and aragorn, like heimdal itself, are interactive agents
-dispatched as subagents — if any of them asks the user something, follow
+Heimdal is an interactive agent dispatched as a subagent — if it asks the
+user something, follow
 the "User-input relay protocol" defined once in `commands/factory.md`:
 relay the question, get the answer, and resume the same agent.
 
-Heimdal (or hodor/aragorn) may also need **code-explorer** dispatched for
+Heimdal may also need **code-explorer** dispatched for
 grounded, file-level facts about existing code — follow the
 "Code-exploration relay" mechanism defined once in `commands/factory.md`:
 dispatch code-explorer standalone, feed its report back, and resume the
 same agent.
 
-Heimdal may also discover a gap in a different agent's domain — follow the
-"Peer consultation relay" mechanism defined once in `commands/factory.md`.
+Heimdal may send Hermione scouts out on its own before asking the user something.
+You don't need to do anything for that — see "Peer consultation" in
+`commands/factory.md`.
 
-Inquiry is the first phase in the phase order (inquiry → research →
-brainstorm → discussion → plans → test → implement), so it has no upstream
+Inquiry is the first phase in the phase order (inquiry → research → discussion → plans → test → implement), so it has no upstream
 artifact dependency to check.
 
 ## Required upstream artifacts

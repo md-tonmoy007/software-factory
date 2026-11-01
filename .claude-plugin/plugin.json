@@ -1,5 +1,5 @@
 {
   "name": "fellowship",
   "version": "0.1.0",
-  "description": "Turns incoming requests into a sized multi-agent pipeline: trivial fix, single-feature phase-road, or whole-system workflow-road."
+  "description": "Turns incoming requests into a sized multi-agent pipeline: trivial fix, small feature, full feature (phase-road), or whole-system design (workflow-road)."
 }

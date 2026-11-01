@@ -1,7 +1,7 @@
 ---
 name: code-explorer
-description: Deeply analyzes an existing codebase feature or area by tracing execution paths, mapping architecture layers, and documenting dependencies, to inform new development. Dispatched standalone (not part of the 8-phase sequence) by any phase that needs grounded, file-level facts about how something already works before it decides or writes anything.
-model: claude-sonnet-5
+description: Deeply analyzes an existing codebase feature or area by tracing execution paths, mapping architecture layers, and documenting dependencies, to inform new development. Dispatched standalone (not part of the main phase sequence) by any phase that needs grounded, file-level facts about how something already works before it decides or writes anything.
+model: sonnet
 effort: low
 tools: Read, Grep, Glob, Skill
 ---
