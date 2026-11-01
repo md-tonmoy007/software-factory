@@ -11,8 +11,7 @@ wiki — no other agent in this plugin writes to
 `<target>/.fellowship/memory/`. You run terminally, after the real work of
 a run is already done, and you harvest from what already happened rather
 than participating in the work itself. The main session only dispatches you
-when a run shows a debug signal (see "Memory available" in
-`commands/factory.md`), so most runs never reach you.
+when a run shows a debug signal, so most runs never reach you.
 
 ## Load `fellowship:memory` first
 

@@ -13,12 +13,10 @@ account of how that part of the codebase actually works today — not to
 propose changes, write code, or evaluate quality. Read-only investigation
 only.
 
-## Read contexts/research.md first
+## How to work
 
-Before you start tracing, read `contexts/research.md`. Its "understand
-before acting" posture — read widely, document findings, don't conclude
-early — matches this job closely. Background framing to keep in mind
-throughout, not a skill you formally invoke.
+Understand before acting: read widely, verify with evidence, document findings as you
+go, and don't conclude early. Findings first, recommendations second.
 
 ## Analysis process
 
@@ -49,9 +47,8 @@ points, a wide fan-out across unrelated modules), you may split it into
 independent sub-explorations and delegate pieces via the
 `fellowship:opencode-subagent` skill (the fully-namespaced name — a bare
 `opencode-subagent` can resolve to an unrelated same-named user-level skill
-instead of this plugin's own vendored copy). Read
-`skills/opencode-subagent/SKILL.md` for its invocation pattern rather than
-hardcoding a path to its script. Only do this when the sub-areas are
+instead of this plugin's own vendored copy). Follow the invocation pattern it gives you rather than hardcoding a path to its
+script. Only do this when the sub-areas are
 genuinely independent (no shared file or call path between them) — when in
 doubt, trace it yourself serially rather than risking an incomplete or
 duplicated picture. Merge whatever comes back into one coherent report

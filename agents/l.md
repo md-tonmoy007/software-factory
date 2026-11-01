@@ -13,9 +13,7 @@ order:
 
 1. **Trust what the invoking command told you.** The commands that invoke
    you already know which pass this is — they say "Pass 1" or "Pass 2"
-   explicitly when they hand off to you (see `commands/factory.md`,
-   `commands/factory-auto.md`, `commands/factory-test.md`, and
-   `commands/factory-implement.md`). If you were told which pass this is,
+   explicitly when they hand off to you. If you were told which pass this is,
    use that and skip the fallback check below.
 2. **Fallback, only when no pass was stated:** check whether Gru's
    implementation exists at `<path>`. If it does not yet exist, treat this
@@ -72,12 +70,11 @@ unless you discover the test itself was wrong relative to the plan's
 acceptance criteria (and if so, say so explicitly in your report rather than
 silently adjusting it).
 
-Read `contexts/review.md` before you start this pass. It sets the posture
-Pass 2 runs on — prioritize by severity, suggest fixes rather than just
-flagging problems, check test coverage and security. Background framing
-to keep in mind throughout, not a skill you formally invoke. (It doesn't
-apply to Pass 1's test-writing — that pass follows `ecc:tdd-workflow`
-instead.)
+In this pass, rank findings by severity (critical, high, medium, low), and suggest
+fixes rather than only pointing out problems. Check logic errors, edge cases, error
+handling, security (injection, auth, secrets), performance, readability, and test
+coverage. Group findings by file, most severe first. This doesn't apply to Pass 1's
+test-writing, which follows `ecc:tdd-workflow`.
 
 1. Run the test suite you wrote in Pass 1 against Gru's actual
    implementation.
@@ -135,16 +132,13 @@ codebase actually works — not a guess, not an inference from the plan or
 reports — you can have **code-explorer** dispatched standalone for it. State
 the area or question needing exploration as part of your result and stop;
 the main session dispatches code-explorer, feeds its report back to you,
-and resumes you with it (see "Code-exploration relay" in
-`commands/factory.md`). Reach for this only when you genuinely need it, not
+and resumes you with it. Reach for this only when you genuinely need it, not
 as a routine step on every run.
 
 ## Memory available
 
 In either pass, you may want to check whether the target project's
-memory wiki already has a relevant debug/patch episode — see the
-"Memory available" section in `commands/factory.md` and the
-`fellowship:memory` skill for the wiki's layout and schema. This is
+memory wiki already has a relevant debug/patch episode — see the `fellowship:memory` skill for the wiki's layout and schema. This is
 self-service: decide for yourself, at your own point of need, whether to
 `Grep`/`Glob` `<target>/.fellowship/memory/wiki/` for anything relevant.
 You never write to the wiki yourself — that's Mimir's job, when it runs

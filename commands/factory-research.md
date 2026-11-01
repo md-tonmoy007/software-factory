@@ -8,15 +8,19 @@ This command jumps straight to the **research** phase of the Fellowship
 pipeline, instead of driving the whole guided sequence the way `/factory`
 does.
 
+## Load the shared rules first
+
+Before anything else, invoke the Skill tool with `skill: "fellowship:pipeline"`. It
+holds the shared rules this command refers to by name. If it won't load, tell the
+user and stop rather than guessing at them.
+
 ## Resolve the path first
 
 Follow the "Resuming an already-resolved path" convention defined once in
-`commands/factory.md`: reuse a `<path>` already resolved earlier in this
+the `fellowship:pipeline` skill: reuse a `<path>` already resolved earlier in this
 conversation if there is one; otherwise use a user-supplied argument/path
 hint; otherwise list existing folders under the configured `folderName`
-and ask the user which to use (or whether to start a new one). Only fall back to running **hodor** fresh (exactly as `/factory`'s own Step 0
-does) when none of those apply. Use the same
-`commands/factory.md` rule to tell whether a folder is system-level
+and ask the user which to use (or whether to start a new one). Only fall back to running **hodor** fresh when none of those apply. Use the same rule from the `fellowship:pipeline` skill to tell whether a folder is system-level
 (nested features, which also decides the road/level) or a standalone
 phase-road folder.
 
@@ -24,22 +28,22 @@ If this is a feature nested under a system, also note the parent system
 path `<folder-name>/<system-name>/` — the upstream agents this command
 invokes (heimdal/hermione/salander/odysseus) need it to read the system's own
 `plans/plan-ai.md` (and, for the researchers, `research-report-ai.md`) as
-upstream context; see those agents' own files.
+upstream context.
 
 Heimdal and Askeladd are interactive agents dispatched as subagents — if
 either asks the user something, follow the "User-input relay protocol" defined once in
-`commands/factory.md`: relay the question, get the answer, and resume the
+the `fellowship:pipeline` skill: relay the question, get the answer, and resume the
 same agent.
 
 Any of these agents may also need **code-explorer** dispatched for
 grounded, file-level facts about existing code — follow the
-"Code-exploration relay" mechanism defined once in `commands/factory.md`:
+"Code-exploration relay" mechanism defined once in the `fellowship:pipeline` skill:
 dispatch code-explorer standalone, feed its report back to the same
 dispatched agent, and resume it.
 
 These agents consult each other directly when one finds a gap in another's
 domain. You only step in if a closing message starts with `REOPEN:` — see "Peer
-consultation" in `commands/factory.md`.
+consultation" in the `fellowship:pipeline` skill.
 
 ## Core mechanism: check upstream artifacts before invoking
 
@@ -67,7 +71,7 @@ Concretely for this command:
 
 Once `<path>/inquiry-report-ai.md` exists (whether it was already there or
 heimdal just wrote it), run the "Research step" defined in
-`commands/factory.md`. The level is system for a workflow-road system run, and
+the `fellowship:pipeline` skill. The level is system for a workflow-road system run, and
 feature for plain phase-road or a nested feature.
 
 If the user asks for deep research, tell Hermione so. If a report already exists

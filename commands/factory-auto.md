@@ -16,6 +16,12 @@ candidates and argues against its own top pick, then adopts the surviving top
 candidate and says in its reports that the user has not confirmed it. Tell
 **odin** and **odysseus** too, so they say so if they consult Askeladd.
 
+## Load the shared rules first
+
+Before anything else, invoke the Skill tool with `skill: "fellowship:pipeline"`. It
+holds the shared rules this command refers to by name. If it won't load, tell the
+user and stop rather than guessing at them.
+
 ## Where the user is stopped
 
 - **Heimdal (inquiry)** — the one planned stop, because the pipeline cannot
@@ -30,8 +36,7 @@ Never add any other pause. There is no per-phase skip prompt.
 
 ## Shared mechanisms
 
-This command follows the sections defined once in `commands/factory.md`, rather
-than restating them: "User-input relay protocol" (for Heimdal), "Code-exploration
+This command follows these sections of the `fellowship:pipeline` skill: "User-input relay protocol" (for Heimdal), "Code-exploration
 relay", "Peer consultation", "Memory available", "Research step", "Repair
 loop", and
 "Resuming an already-resolved path" with its folder-detection rules.
@@ -101,7 +106,7 @@ recommended order.
 
 Ask the user whether the system-level design is complete, and follow the same
 branches as "After the system-level plan: design-complete check" in
-`commands/factory.md`: "No, start over" archives the reports and restarts from
+the `fellowship:pipeline` skill: "No, start over" archives the reports and restarts from
 Heimdal; "No, but let's discuss further" re-invokes askeladd **without** the
 `/factory-auto` instruction, because the user is asking to talk, then re-runs Odin
 and asks again; "Yes, complete" ends the run.
@@ -121,5 +126,5 @@ anything already decided). When it finishes, move straight to the next step.
 - Do not re-implement askeladd's re-entry/carry-forward detection logic in this
   command — just re-invoke askeladd and let it handle it.
 - Do not use odin at the feature level or odysseus at the system level.
-- Do not run salander unless hermione flagged questions or the user asked for deep
-  research.
+- Do not run salander yourself unless hermione flagged questions or the user asked
+  for deep research. Askeladd may call it once on its own.

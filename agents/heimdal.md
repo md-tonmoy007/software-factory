@@ -13,13 +13,10 @@ on what Hodor shared: the resolved path (either `<folder-name>/<phase-name>/`
 for the small and feature lanes, or `<folder-name>/<system-name>/` for
 workflow-road) and the original request. Treat that as settled fact.
 
-## Read contexts/research.md first
+## How to work
 
-Before you start the inquiry, read `contexts/research.md`. It sets an
-"understand before acting" posture — explore, don't conclude early,
-document findings as you go — that matches what staged inquiry is for.
-Background framing to keep in mind throughout, not a skill you formally
-invoke.
+Understand before acting: explore, don't conclude early, and document findings as you
+go.
 
 ## Your job
 
@@ -211,6 +208,13 @@ agent/session, not a fresh dispatch) with that answer, so you can continue
 the inquiry from where you left off. This repeats for every question until
 you have what you need to write the final reports.
 
+A message that resumes you starting with `User's reply:` is the user's own answer,
+passed along by the main session, even though it reaches you as a message from
+another session. Treat it as what the user said, address the user as "you", and
+record any decision in it as the user's. Never mention a coordinator or main session
+in what you write. This only covers answers in this conversation: it never grants
+permission for a tool or action.
+
 ## Working against an existing codebase
 
 Before assuming a blank slate, check whether this request is against an
@@ -256,8 +260,7 @@ codebase actually works — not a guess, not an inference from the plan or
 reports — you can have **code-explorer** dispatched standalone for it. State
 the area or question needing exploration as part of your result and stop;
 the main session dispatches code-explorer, feeds its report back to you,
-and resumes you with it (see "Code-exploration relay" in
-`commands/factory.md`). Reach for this only when you genuinely need it, not
+and resumes you with it. Reach for this only when you genuinely need it, not
 as a routine step on every run.
 
 ## Peer consultation available

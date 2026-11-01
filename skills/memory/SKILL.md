@@ -1,6 +1,6 @@
 ---
 name: memory
-description: Single source of truth for the Fellowship plugin's target-project memory layout, wiki entry schema, two-stage write gate, secrets-scrubbing procedure, and the deferred graphify extension point. Invoked as fellowship:memory by agents/mimir.md (the sole writer) and read-side by Hermione, Salander, Gru, L, and Ullr.
+description: Single source of truth for the Fellowship plugin's target-project memory layout, wiki entry schema, two-stage write gate, secrets-scrubbing procedure, and the deferred graphify extension point. Invoked as fellowship:memory by Mimir (the sole writer) and read-side by Hermione, Salander, Gru, L, and Ullr.
 ---
 
 # fellowship:memory
@@ -9,7 +9,7 @@ This skill is the single source of truth for how the Fellowship plugin
 remembers things about the **target project** it works on (never about
 this plugin repo itself). It is invoked by name as `fellowship:memory`
 (namespaced, because a bare `memory` can collide with an unrelated
-same-named user-level skill — same hazard `agents/gru.md` already
+same-named user-level skill — same hazard Gru's agent file already
 documents for `opencode-subagent`).
 
 This is the "wiki" layer only: an append-only record of debug/patch
@@ -24,10 +24,10 @@ episodes — what went wrong, how it was actually solved. It is deliberately
 
 ## Who reads, who writes
 
-- **Mimir** (`agents/mimir.md`) is the sole writer. It runs terminally:
+- **Mimir** (Mimir's agent file) is the sole writer. It runs terminally:
   after Ullr on the trivial path, and after L Pass 2 / Gru on the small and
   feature lanes, and only when the main session's cheap screen finds a Stage 1
-  signal (see `commands/factory.md`). It never runs mid-pipeline.
+  signal (see the `fellowship:pipeline` skill). It never runs mid-pipeline.
 - **Hermione, Salander, Gru, L, Ullr** are the only readers in v1 (self-service: each
   decides for itself, at its own point of need, whether to consult the
   wiki — there is no upfront digest and no centrally-injected recall).
@@ -35,7 +35,7 @@ episodes — what went wrong, how it was actually solved. It is deliberately
   code-explorer`) are deferred readers — not wired to this skill
   in v1, widen later if useful.
 - **Hodor** scaffolds the directory and the gitignore exemption at
-  target-project setup time (see `agents/hodor.md`) but performs zero
+  target-project setup time (see Hodor's agent file) but performs zero
   memory reads itself — that's a setup action, not a reader capability.
 
 ## Directory layout
@@ -54,7 +54,7 @@ Inside the **target project** (never this plugin repo):
 that is **exempted from `.gitignore`** — it travels with, and is committed
 to, the target project's own git history, even though the rest of
 `.fellowship/` (run folders, `config.json`) stays gitignored. Hodor keeps
-this exemption in place on every run (`agents/hodor.md`), using `.fellowship/*`
+this exemption in place on every run (Hodor's agent file), using `.fellowship/*`
 plus `!.fellowship/memory/`, because git can't re-include anything under a
 directory that is itself ignored.
 
@@ -142,7 +142,7 @@ candidate):
 - a failure whose cause was stated verbatim in the error message (nothing
   was actually discovered),
 - workflow-road runs — no implementation occurred, so there is no episode
-  to harvest (see `commands/factory.md`'s "Memory available" section).
+  to harvest (see the `fellowship:pipeline` skill's "Memory available" section).
 
 **Mandatory reporting either way.** Mimir's closing report always states
 one of:
@@ -234,11 +234,11 @@ outgrows a single file at a future edit.
 ## What this skill does not do
 
 - It does not write or read `implementation-log.md` — that's Gru's file,
-  tightened separately (see `agents/gru.md`).
+  tightened separately (see Gru's agent file).
 - It does not implement, probe, or reference any graphify command in v1.
 - It does not run on workflow-road (system-level) passes — no
   implementation occurred, so there is nothing to harvest; see
-  `commands/factory.md`'s "Memory available" section for how that's
+  the `fellowship:pipeline` skill's "Memory available" section for how that's
   handled at the dispatch-decision level.
 - It never makes a run fail. Every failure mode here (scan hit twice,
   directory missing, anything else) ends in "log and continue," never a

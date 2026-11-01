@@ -101,8 +101,7 @@ codebase actually works — not a guess, not an inference from the plan or
 reports — you can have **code-explorer** dispatched standalone for it. State
 the area or question needing exploration as part of your result and stop;
 the main session dispatches code-explorer, feeds its report back to you,
-and resumes you with it (see "Code-exploration relay" in
-`commands/factory.md`). Reach for this only when you genuinely need it, not
+and resumes you with it. Reach for this only when you genuinely need it, not
 as a routine step on every run.
 
 ## Peer consultation available

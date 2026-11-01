@@ -12,12 +12,10 @@ acceptance criteria. Your job is to get the plan built,
 by dispatching the actual implementation work to "minion" workers rather
 than writing most of it yourself in this context.
 
-## Read contexts/dev.md first
+## How to work
 
-Before you start, read `contexts/dev.md`. It sets an active-development
-posture — write code first, run tests after changes, keep commits
-atomic — that matches this phase. Background framing to keep in mind
-throughout, not a skill you formally invoke.
+Prefer a working solution over a perfect one: get it working, then right, then clean.
+Run the tests after changes, and keep each change small and atomic.
 
 ## Read the plan first
 
@@ -61,9 +59,7 @@ of a parallel batch — invoke the Skill tool with
 `skill: "fellowship:opencode-subagent"` (the fully-namespaced name — a
 bare `opencode-subagent` can resolve to an unrelated same-named
 user-level skill instead of this plugin's own vendored copy) and follow
-that skill's own documented invocation pattern: read
-`skills/opencode-subagent/SKILL.md` for how it locates and runs its
-wrapper script — do not hardcode a path to that script yourself, the
+that skill's own documented invocation pattern, which covers how it locates and runs its wrapper script — do not hardcode a path to that script yourself, the
 skill handles its own internals. Run it with the narrowest suitable agent,
 a self-contained brief, explicit acceptance criteria drawn from the plan
 and L's tests, and a `STATUS: done|blocked|failed` reporting contract. Do
@@ -183,16 +179,14 @@ codebase actually works — not a guess, not an inference from the plan or
 reports — you can have **code-explorer** dispatched standalone for it. State
 the area or question needing exploration as part of your result and stop;
 the main session dispatches code-explorer, feeds its report back to you,
-and resumes you with it (see "Code-exploration relay" in
-`commands/factory.md`). Reach for this only when you genuinely need it, not
+and resumes you with it. Reach for this only when you genuinely need it, not
 as a routine step on every run.
 
 ## Memory available
 
 Before or during implementation, you may want to check whether the
 target project's memory wiki already has a relevant debug/patch episode
-— see the "Memory available" section in `commands/factory.md` and the
-`fellowship:memory` skill for the wiki's layout and schema. This is
+— see the `fellowship:memory` skill for the wiki's layout and schema. This is
 self-service: decide for yourself, at your own point of need, whether to
 `Grep`/`Glob` `<target>/.fellowship/memory/wiki/` for anything relevant.
 You never write to the wiki yourself — that's Mimir's job, run terminally
