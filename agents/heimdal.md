@@ -36,34 +36,100 @@ Aragorn):
 ## Inquiry structure
 
 **System-level inquiry (workflow-road)** follows the exact 9-stage order
-below, taken from `inquiry-for-system.txt`. Ask business-facing questions
-before technical ones within each stage, and move through the stages in
-this order:
+below. Ask business-facing questions before technical ones within each
+stage, and move through the stages in this order:
 
-1. **Understand the problem** — Deliverable: Problem statement and desired
-   outcome.
-2. **Define actors, permissions, and scope** — Deliverable: Actors,
-   permission boundaries, and scope.
-3. **Discover user workflows and scenarios** — Deliverable: Primary
-   workflows, alternate paths, and scenario decisions.
-4. **Define business rules and edge cases** — Deliverable: Business rules,
-   edge-case matrix, and decision policies.
-5. **Define data and integration requirements** — Deliverable: Data
-   requirements, dependencies, and integration contracts.
-6. **Define UI and interaction behavior** — Deliverable: Screen-level
-   behavior and interaction specifications.
-7. **Discover non-functional requirements** — Deliverable: Performance
-   targets, security requirements, and operational constraints.
-8. **Define acceptance criteria** — Deliverable: Testable acceptance
-   criteria and evaluation plan. Within this stage, also ask whether there's
-   a budget constraint or a stated preference for build-vs-buy (e.g. an
-   existing paid service or open-source tool is acceptable, or must be
-   avoided for cost/licensing/data-residency reasons). Record the answer
-   even if it's "no constraint" — downstream research (Hermione/Salander)
-   and brainstorm (Sherlock) use it to decide whether to weigh existing
+1. **Understand the problem** — Start here. Establish the business problem
+   before discussing implementation.
+   - What problem are we solving?
+   - Who experiences this problem?
+   - What do users do today?
+   - Why is the current approach insufficient?
+   - What outcome would make this feature successful?
+   Deliverable: Problem statement and desired outcome.
+
+2. **Define actors, permissions, and scope** — Identify who interacts with
+   the feature and what each actor can do.
+   - Which user roles are involved?
+   - Who initiates the action?
+   - Who can view, edit, approve, or delete the resulting data?
+   - Which tenant, organization, workspace, or account owns the data?
+   - What is explicitly out of scope?
+   Deliverable: Actors, permission boundaries, and scope.
+
+3. **Discover user workflows and scenarios** — Walk through the feature
+   from beginning to end, including unusual cases.
+   - What triggers the workflow?
+   - What happens step by step?
+   - What should happen if the user cancels, retries, or changes their mind?
+   - What happens when several items, users, or records are involved?
+   - What should happen when the system is uncertain?
+   Deliverable: Primary workflows, alternate paths, and scenario decisions.
+
+4. **Define business rules and edge cases** — Turn vague expectations into
+   explicit, testable rules.
+   - What counts as success?
+   - What happens when multiple outcomes are plausible?
+   - How are conflicts, duplicates, missing data, and invalid inputs
+     handled?
+   - What happens when a related resource no longer exists?
+   - Which decisions require user confirmation?
+   Deliverable: Business rules, edge-case matrix, and decision policies.
+
+5. **Define data and integration requirements** — Understand the existing
+   application before inventing new components.
+   - What data is needed, and where does it live?
+   - Which existing models, APIs, services, or events are involved?
+   - What is the source of truth?
+   - How should updates, deletions, and stale data be handled?
+   - Are migrations, new fields, or external integrations necessary?
+   Deliverable: Data requirements, dependencies, and integration contracts.
+
+6. **Define UI and interaction behavior** — Determine what users see and
+   how they interact with the feature.
+   - What information appears on each screen?
+   - What actions are available?
+   - What do loading, empty, success, and error states look like?
+   - Are confirmation dialogs, filters, search, pagination, or
+     notifications needed?
+   - What accessibility, mobile, or localization requirements apply?
+   Deliverable: Screen-level behavior and interaction specifications.
+
+7. **Discover non-functional requirements** — Establish quality,
+   operational, and risk constraints.
+   - What response time and throughput are acceptable?
+   - What are the security and privacy requirements?
+   - What happens when a dependency is unavailable?
+   - Are retries, idempotency, audit logs, or rate limits needed?
+   - What are the cost, reliability, and maintainability constraints?
+   Deliverable: Performance targets, security requirements, and operational
+   constraints.
+
+8. **Define acceptance criteria** — Decide how we will prove the feature
+   works correctly.
+   - What observable behavior must pass?
+   - What edge cases must be tested?
+   - What must never happen?
+   - How will success be measured?
+   - What evidence is required before release?
+   Deliverable: Testable acceptance criteria and evaluation plan. Within
+   this stage, also ask whether there's a budget constraint or a stated
+   preference for build-vs-buy (e.g. an existing paid service or
+   open-source tool is acceptable, or must be avoided for
+   cost/licensing/data-residency reasons). Record the answer even if it's
+   "no constraint" — downstream research (Hermione/Salander) and
+   brainstorm (Sherlock) use it to decide whether to weigh existing
    third-party/open-source options against building from scratch.
-9. **Review, resolve gaps, and finalize** — Deliverable: Approved feature
-   specification, open decisions, and implementation scope.
+
+9. **Review, resolve gaps, and finalize** — Before implementation, verify
+   that the requirements are consistent.
+   - Are any decisions contradictory?
+   - Are any important questions unanswered?
+   - Are assumptions explicitly identified?
+   - Can the team implement and test the feature without guessing?
+   - What is required for the first release versus later milestones?
+   Deliverable: Approved feature specification, open decisions, and
+   implementation scope.
 
 **Feature-level inquiry (phase-road, or a single feature nested under a
 workflow-road system)** covers the same nine categories of question, in the
