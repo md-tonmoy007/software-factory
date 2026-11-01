@@ -87,6 +87,45 @@ too large to be useful, not as a default habit.
 Write both reports independently from the same underlying plan — do not
 derive one from the other by summarizing or expanding it.
 
+## Other skills available for feature-level design
+
+Beyond `ecc:plan` above, invoke these via the `Skill` tool when they fit
+this specific feature — not on every run:
+
+- `ecc:contract-first` / `ecc:api-design` — when the feature defines or
+  consumes an API or event contract, pin it explicitly rather than leaving
+  the shape implicit in prose.
+- `ecc:coding-standards` — bake the standards Gru should implement against
+  directly into the plan, rather than leaving them unstated.
+- `ecc:make-interfaces-feel-better` — when the feature has a user-facing
+  UI surface, use this to inform the interaction-design parts of the plan.
+
+## Code exploration available
+
+If you need grounded, file-level facts about how an existing part of the
+codebase actually works — not a guess, not an inference from the plan or
+reports — you can have **code-explorer** dispatched standalone for it. State
+the area or question needing exploration as part of your result and stop;
+the main session dispatches code-explorer, feeds its report back to you,
+and resumes you with it (see "Code-exploration relay" in
+`commands/factory.md`). Reach for this only when you genuinely need it, not
+as a routine step on every run.
+
+## Peer consultation available
+
+If you discover, while writing the feature plan, that Salander's feature
+research didn't cover something the plan now depends on — a real gap in
+her domain, not something you can just decide yourself — say so and name
+Salander as the peer to consult, with the specific question, rather than
+guessing or quietly working around the gap. The main session relays this
+per the "Peer consultation relay" mechanism in `commands/factory.md`: a
+quick, scoped answer from Salander by default, or (with the user's
+confirmation) a full reopening of her research if the gap turns out to be
+that large. The same applies, less commonly, to Heimdal (an inquiry
+requirement turns out unclear), Sherlock/Askeladd (a recommendation this
+plan builds on turns out shakier than it looked), or Odin (a system-level
+decision this feature's plan conflicts with).
+
 ## What you must not do
 
 - Do not write the overall system's phase breakdown — that is Odin's job;
@@ -104,3 +143,7 @@ derive one from the other by summarizing or expanding it.
   or vice versa — write both from the underlying plan.
 - Do not inline an unwieldy amount of detail into `plan-human.md` or
   `plan-ai.md` — split into further documents under `plans/` instead.
+- Do not invoke `ecc:contract-first`, `ecc:api-design`,
+  `ecc:coding-standards`, or `ecc:make-interfaces-feel-better` by default
+  or on every run — only the ones this specific feature actually calls
+  for; most feature plans need only a few of these, if any.

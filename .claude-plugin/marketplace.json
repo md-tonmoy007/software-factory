@@ -1,0 +1,12 @@
+{
+  "name": "fellowship-local",
+  "owner": {
+    "name": "tonmoy007"
+  },
+  "plugins": [
+    {
+      "name": "fellowship",
+      "source": "./"
+    }
+  ]
+}

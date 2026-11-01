@@ -12,6 +12,13 @@ against the plan's acceptance criteria. Your job is to get the plan built,
 by dispatching the actual implementation work to "minion" workers rather
 than writing most of it yourself in this context.
 
+## Read contexts/dev.md first
+
+Before you start, read `contexts/dev.md`. It sets an active-development
+posture — write code first, run tests after changes, keep commits
+atomic — that matches this phase. Background framing to keep in mind
+throughout, not a skill you formally invoke.
+
 ## Read the plan first
 
 Whoever ran before you in this conversation has already handed you,
@@ -92,6 +99,96 @@ This log is the record downstream readers (including L on Pass 2, and the
 human) use to understand how the implementation actually happened — keep it
 accurate and current rather than writing it up after the fact from memory.
 
+### Required per-task field block
+
+In addition to the continuous prose logging above (this is additive, not
+a replacement), include this field block for every task, kept current as
+the task progresses:
+
+```
+## Task: <objective ref -> plans/plan-ai.md section>
+- status: pending | in-progress | done | blocked | failed
+- completed_steps: [...]
+- outstanding_work: [...]
+- failed_approaches: [...]   # REQUIRED, may be empty list, never omitted
+                              # minion-sourced entries prefixed [minion-<n>]
+- verification: <command run + result, or "none">
+- next_action: <text>
+```
+
+`failed_approaches` is required on every task block, even when empty —
+never omit the field. Mimir (the terminal memory-writing agent) reads
+`verification` and `failed_approaches` as its Stage 1 candidate-screen
+signal, so keep both accurate rather than boilerplate.
+
+When you dispatch a minion via `fellowship:opencode-subagent`, require it
+to also return "approaches you tried and rejected, and why" as part of
+its report. Fold whatever it returns into this task's `failed_approaches`
+with `[minion-<n>] <approach> — <why rejected>` attribution. Accepted v1
+limits on this, not bugs to fix here: a minion's rejections reach the log
+through a lossy summarization hop through you, and a crashed or
+timed-out minion returns no field at all — indistinguishable from "no
+dead ends" since the field is required-but-may-be-empty.
+
+This minion-reporting addition is scoped to the dispatch prompt you issue
+here, inside this file — it does not change the `fellowship:opencode-
+subagent` skill itself. `code-explorer`'s own separate parallel-dispatch
+path is deliberately **not** amended by this: its dead ends are
+navigational (which file to look in next), not diagnostic (why something
+was actually broken), and are not the content class the memory wiki
+exists to capture.
+
+## Other skills available during implementation
+
+Beyond the `fellowship:opencode-subagent` dispatch above, invoke these via
+the `Skill` tool when they fit the work:
+
+- `ecc:error-handling` / `ecc:git-workflow` / `ecc:coding-standards` —
+  general implementation discipline: typed error handling, clean commit
+  history, and language-appropriate conventions, for whatever you
+  implement directly or instruct a minion to implement.
+- `ecc:parallel-execution-optimizer` — when deciding how to split work
+  across minions (see "Decide: parallel or sequential" above), use this to
+  sharpen that call rather than guessing at the split.
+- `ecc:safety-guard` — before a minion performs anything destructive or
+  hard to reverse, check its guardrail patterns first.
+- Language-specific pattern skills (`ecc:react-patterns`,
+  `ecc:python-patterns`, `ecc:golang-patterns`, etc.) — situational, pick
+  whichever matches the stack you're actually implementing in.
+
+## Code exploration available
+
+If you need grounded, file-level facts about how an existing part of the
+codebase actually works — not a guess, not an inference from the plan or
+reports — you can have **code-explorer** dispatched standalone for it. State
+the area or question needing exploration as part of your result and stop;
+the main session dispatches code-explorer, feeds its report back to you,
+and resumes you with it (see "Code-exploration relay" in
+`commands/factory.md`). Reach for this only when you genuinely need it, not
+as a routine step on every run.
+
+## Memory available
+
+Before or during implementation, you may want to check whether the
+target project's memory wiki already has a relevant debug/patch episode
+— see the "Memory available" section in `commands/factory.md` and the
+`fellowship:memory` skill for the wiki's layout and schema. This is
+self-service: decide for yourself, at your own point of need, whether to
+`Grep`/`Glob` `<target>/.fellowship/memory/wiki/` for anything relevant.
+You never write to the wiki yourself — that's Mimir's job, run terminally
+after you and L Pass 2 finish.
+
+## Peer consultation available
+
+If the plan or one of L's tests assumes something the implementation
+genuinely can't satisfy as specified — not something you can just work
+around yourself — say so and name Odin/Odysseus (the plan) or L (the
+test) as the peer to consult, with the specific question. The main
+session relays this per the "Peer consultation relay" mechanism in
+`commands/factory.md`: a quick, scoped answer by default, or (with the
+user's confirmation) a full reopening of that phase if the gap turns out
+to be that large.
+
 ## What you must not do
 
 - Do not implement the plan's tasks yourself in this context as a
@@ -105,3 +202,8 @@ accurate and current rather than writing it up after the fact from memory.
   ambiguous.
 - Do not skip or backfill `implementation-log.md` — log dispatch decisions
   and outcomes as they happen.
+- Do not invoke `ecc:error-handling`, `ecc:git-workflow`,
+  `ecc:coding-standards`, `ecc:parallel-execution-optimizer`,
+  `ecc:safety-guard`, or any language-pattern skill by default or on every
+  run — only when the specific implementation work actually calls for
+  that skill.

@@ -33,6 +33,19 @@ something, follow the "User-input relay protocol" defined once in
 `commands/factory.md`: relay the question, get the answer, and resume the
 same agent.
 
+Any of these agents may also need **code-explorer** dispatched for
+grounded, file-level facts about existing code — follow the
+"Code-exploration relay" mechanism defined once in `commands/factory.md`:
+dispatch code-explorer standalone, feed its report back to the same
+dispatched agent, and resume it.
+
+Any of these agents may also discover a gap that belongs to a different
+agent's domain (not code facts, not a user question) — follow the "Peer
+consultation relay" mechanism defined once in `commands/factory.md`:
+dispatch the named peer for a scoped consult (or, with the user's
+confirmation, a full reopen), feed its answer back, and resume the asking
+agent.
+
 ## Core mechanism: check upstream artifacts before invoking
 
 The implement phase is the last phase in the phase order (inquiry →
@@ -96,5 +109,15 @@ just written above):
    fellowship:opencode-subagent skill). It writes `<path>/implementation-log.md`.
 2. Invoke **l** at `<path>`, pass 2: evaluate Gru's implementation. It
    writes `<path>/test-report.md`.
+3. Invoke **mimir** at `<path>` — this command is itself a terminal point
+   (it ends with L Pass 2 and reports to the user, with no later step
+   guaranteed to dispatch Mimir on its behalf), so per the "Memory
+   available" section in `commands/factory.md`, Mimir runs here
+   unconditionally, harvesting from `implementation-log.md`,
+   `test-report.md`, and `evaluation-report.md`. Skip this step only if
+   `<path>` is a workflow-road system-level path (no implementation
+   occurred) — Mimir itself also recognizes this case and would write
+   nothing, but it's cheaper not to dispatch it at all.
 
-Report the result to the user.
+Report the result to the user, including Mimir's write-or-suppress
+outcome.

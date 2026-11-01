@@ -53,6 +53,130 @@ question, get the answer, resume the same agent, and repeat until you have
 its final report. Do not re-describe this mechanism in those other files —
 they reference this section instead.
 
+## Code-exploration relay (shared mechanism)
+
+**code-explorer** is not part of the 8-phase sequence — it is a standalone,
+read-only agent any phase can call on when it needs grounded, file-level
+facts about how an existing part of the codebase actually works, rather than
+guessing or inferring from the plan/reports alone. Every phase agent in this
+plugin (Aragorn, Heimdal, Hermione, Salander, Sherlock, Askeladd, Odin,
+Odysseus, L, Gru, Ullr) may request this, same dispatch-and-relay shape as
+the user-input relay protocol above, but for code facts instead of user
+answers:
+
+1. When a dispatched agent decides it needs code-explorer (an existing
+   feature/area it must understand before it can decide or write anything,
+   and it cannot determine that safely itself from its own tools), it
+   states the area/question needing exploration as part of its result and
+   stops there for that sub-need, rather than guessing at how the existing
+   code works.
+2. The main session (you, running this command) dispatches **code-explorer**
+   standalone with that area/question, per `agents/code-explorer.md`.
+3. The main session feeds code-explorer's report back to the same
+   dispatched agent (the same subagent/session, not a fresh dispatch) so it
+   can continue with grounded facts instead of a guess.
+4. This can repeat for multiple areas, and composes with the user-input
+   relay protocol — an agent may need both a code-explorer round and a
+   user-answer round before it produces its final report.
+
+Every other command file in this plugin references this section rather than
+restating it.
+
+## Peer consultation relay (shared mechanism)
+
+This pipeline is not purely sequential hand-off. Any of the 12 agents may,
+mid-task, discover that **another agent's domain** — not code facts, not a
+user-facing question, but a judgment call that properly belongs to a
+different phase — has a gap it cannot responsibly fill itself. The
+canonical case: Odysseus, writing the feature-level plan, realizes Salander's
+feature research didn't cover something the plan now depends on. Rather
+than guessing at that research itself, or silently writing the plan around
+the gap, Odysseus should be able to put the question to Salander directly.
+Every agent in this plugin may do the equivalent for its own situation.
+
+Agents cannot talk to each other directly — each one still runs as a single
+subagent dispatch that executes once and returns. This relay is how the main
+session (you) brokers that conversation, same dispatch-and-relay shape as
+the two relays above, but between two pipeline agents instead of between an
+agent and the user, or an agent and code-explorer:
+
+1. The dispatched agent (the "asker") identifies the specific peer agent
+   whose domain the gap falls in, states the precise question or gap in its
+   result (with enough context that the peer doesn't need to re-derive
+   anything), and stops there for that sub-need.
+2. **Default: quick consult.** Dispatch the named peer agent with that
+   specific question, framed explicitly as a scoped consultation, not a
+   request to redo its whole phase — point it at its own existing report
+   file(s) for context rather than re-running its full process. The peer
+   answers the question (and, if the answer is simple to fold in, may amend
+   its own report file to record it) and returns.
+3. **Escalation: reopening a phase.** If the asker's question reveals the
+   peer's existing work is genuinely insufficient or wrong — not just
+   missing one answerable detail — the asker should say so plainly instead
+   of asking a narrow question. In that case, pause and ask the user whether
+   to formally reopen and rerun that phase (the same confirmation point as
+   skipping a phase, just an unplanned reopening instead of a skip) before
+   dispatching the peer for a full rerun. Do not silently reopen a phase on
+   an agent's say-so alone.
+4. Feed the peer's answer (quick consult) or updated report (reopened
+   phase) back to the same asking agent (the same subagent/session, not a
+   fresh dispatch) and resume it.
+5. This composes with the other two relays above — one agent's turn may
+   involve a code-explorer round, a peer-consultation round, and a
+   user-answer round before it produces its final report.
+
+**Natural peer pairings** (a starting point, not an exhaustive whitelist —
+use judgment for a gap that doesn't fit neatly):
+
+- **Heimdal** (inquiry) ↔ **Hermione/Salander** (research), **Sherlock**
+  (brainstorm): a requirement surfaces later as unclear or incomplete.
+- **Hermione/Salander** (research) ↔ **Heimdal**: a requirement needs
+  clarifying before research can proceed.
+- **Sherlock** (brainstorm) ↔ **Heimdal**, **Hermione/Salander**: a
+  recommendation depends on a requirement or research finding that isn't
+  there yet.
+- **Askeladd** (discussion) ↔ **Sherlock**, **Hermione/Salander**: the
+  debate surfaces a gap in the ranked recommendations or their research
+  basis.
+- **Odin** (system plan) ↔ **Hermione** (system research), **Heimdal**,
+  **Sherlock/Askeladd**, and ↔ **Odysseus** when a system-level plan
+  decision conflicts with a nested feature plan.
+- **Odysseus** (feature plan) ↔ **Salander** (feature research) — the
+  canonical case above — and the same upstream agents as Odin, scaled to
+  one feature.
+- **L Pass 1** (tests) ↔ **Odin/Odysseus**: an acceptance criterion is
+  ambiguous or untestable as written.
+- **Gru** (implement) ↔ **Odin/Odysseus**, **L**: the plan or a test
+  assumes something the implementation can't actually satisfy as specified.
+- **L Pass 2** (evaluate) ↔ **Gru**, **Odin/Odysseus**: before writing a
+  fail verdict, confirm whether a gap is an implementation miss or a plan
+  ambiguity.
+
+Every other command file in this plugin references this section rather than
+restating it.
+
+## Memory available (shared mechanism)
+
+The target project (never this plugin repo) has a memory wiki at
+`<target>/.fellowship/memory/wiki/` — an append-only record of
+debug/patch episodes, laid out and schemed by the `fellowship:memory`
+skill. **Mimir** is the sole writer and runs terminally, never
+mid-pipeline: after **ullr** on the trivial path, and after **l**'s Pass 2
+(following Gru) on the full phase-road pipeline. Four agents —
+**salander, gru, l, ullr** — may read it, self-service, at their own
+point of need; no other agent reads or writes it in v1. **hodor**
+scaffolds the directory and its gitignore exemption at target-project
+setup time but performs zero memory reads of its own. **Workflow-road
+runs do not dispatch Mimir** — no implementation occurs at the system
+level, so there is nothing to harvest.
+
+Memory is never load-bearing: any failure in this mechanism (missing
+directory, a secrets-scan suppression, anything else) is logged by Mimir
+and the run continues regardless — it can never fail a pipeline run.
+
+Every other command file in this plugin references this section rather
+than restating it.
+
 ## Resuming an already-resolved path (shared convention)
 
 Before invoking Hodor/Aragorn fresh to resolve `<path>`, check in this
@@ -113,8 +237,12 @@ trivial or non-trivial.
 
 Invoke **ullr** to make the direct fix, carrying forward whatever Hodor
 already resolved conversationally (config values, the request itself).
-Once Ullr finishes, the pipeline is complete. There is nothing to confirm
-onward to — report Ullr's result to the user and stop.
+Once Ullr finishes, invoke **mimir** (no confirmation pause — this
+dispatch is unconditional, the same way Hodor → Ullr runs without one;
+see "Memory available" above) to harvest a wiki entry from Ullr's report
+if the write gate warrants one. Once Mimir finishes, the pipeline is
+complete — report both Ullr's result and Mimir's write-or-suppress
+outcome to the user and stop.
 
 ## Step 1: invoke Aragorn
 
@@ -180,8 +308,12 @@ of them.
    skill) — writes `<path>/implementation-log.md`.
 8. **l** (Pass 2: evaluates Gru's implementation) — writes
    `<path>/test-report.md`.
+9. **mimir** — runs terminally, unconditional dispatch (no confirmation
+   pause, same as the trivial path's Hodor → Ullr → Mimir), harvesting
+   from `implementation-log.md`, `test-report.md`, and
+   `evaluation-report.md` per the "Memory available" section above.
 
-After step 8, the phase-road sequence for this `<path>` is complete.
+After step 9, the phase-road sequence for this `<path>` is complete.
 
 ## Workflow-road
 
@@ -195,8 +327,10 @@ system decomposes into — their names, scope, and dependency order.
 
 **Workflow-road stops there.** It does not go deep into any individual
 feature, and it does not run the phase-road sequence per feature itself.
-Steps 6–8 (L Pass 1, Gru, L Pass 2) never run at the system level, and no
-nested per-feature run is launched automatically. Once odin's plan is
+Steps 6–9 (L Pass 1, Gru, L Pass 2, Mimir) never run at the system level
+— Mimir is not dispatched on this road at all, since no implementation
+occurred and there is nothing to harvest (see "Memory available" above)
+— and no nested per-feature run is launched automatically. Once odin's plan is
 written, report it to the user — the features it identified, their
 resolved `<folder-name>/<system-name>/<phase-name>/` paths, and the
 recommended order — and stop. Implementing a given feature in depth is a
@@ -279,10 +413,11 @@ on the missing file.
   road.
 - Do not let the user skip Hodor or Aragorn — only phases (Heimdal
   onward) are skippable.
-- Do not run L, Gru, or L Pass 2 as part of a workflow-road system-level
-  pass — workflow-road stops after odin's plan; implementation only
-  happens in a phase-road run (standalone, or started later against one
-  of the identified feature paths).
+- Do not run L, Gru, L Pass 2, or Mimir as part of a workflow-road
+  system-level pass — workflow-road stops after odin's plan;
+  implementation only happens in a phase-road run (standalone, or started
+  later against one of the identified feature paths), and Mimir is not
+  dispatched when there is no implementation to harvest.
 - Do not re-implement askeladd's re-entry/carry-forward detection logic in
   this command — just re-invoke askeladd and let it handle it.
 - Do not use hermione/odin at the feature level or salander/odysseus at

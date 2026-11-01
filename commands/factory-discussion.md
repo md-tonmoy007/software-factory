@@ -33,6 +33,19 @@ something, follow the "User-input relay protocol" defined once in
 `commands/factory.md`: relay the question, get the answer, and resume the
 same agent.
 
+Any of these agents may also need **code-explorer** dispatched for
+grounded, file-level facts about existing code — follow the
+"Code-exploration relay" mechanism defined once in `commands/factory.md`:
+dispatch code-explorer standalone, feed its report back to the same
+dispatched agent, and resume it.
+
+Any of these agents may also discover a gap that belongs to a different
+agent's domain (not code facts, not a user question) — follow the "Peer
+consultation relay" mechanism defined once in `commands/factory.md`:
+dispatch the named peer for a scoped consult (or, with the user's
+confirmation, a full reopen), feed its answer back, and resume the asking
+agent.
+
 ## Core mechanism: check upstream artifacts before invoking
 
 The discussion phase comes after inquiry, research, and brainstorm in the

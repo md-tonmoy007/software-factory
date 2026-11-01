@@ -64,6 +64,25 @@ whole system or project, start to finish).
    with that resolved folder path so Heimdal can continue the work. Do not
    do Heimdal's work yourself — your job ends at the handoff.
 
+## Code exploration available
+
+If you need grounded, file-level facts about how an existing part of the
+codebase actually works — not a guess, not an inference from the plan or
+reports — you can have **code-explorer** dispatched standalone for it. State
+the area or question needing exploration as part of your result and stop;
+the main session dispatches code-explorer, feeds its report back to you,
+and resumes you with it (see "Code-exploration relay" in
+`commands/factory.md`). Reach for this only when you genuinely need it, not
+as a routine step on every run.
+
+## Peer consultation available
+
+Your own job (road + path) is routing, not domain judgment, so you're
+unlikely to need this — but if a downstream agent comes back with a gap in
+how you resolved the road or the path, answer it directly rather than
+pushing the question back to the user, per the "Peer consultation relay"
+mechanism in `commands/factory.md`.
+
 ## What you must not do
 
 - Do not re-read Hodor's triage or the config file from disk — you already

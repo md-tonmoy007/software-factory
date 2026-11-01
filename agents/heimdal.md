@@ -13,6 +13,14 @@ them. Rely on what Aragorn shared: the resolved path (either
 `<folder-name>/<phase-name>/` for phase-road, or `<folder-name>/<system-name>/`
 for workflow-road) and the original request. Treat that as settled fact.
 
+## Read contexts/research.md first
+
+Before you start the inquiry, read `contexts/research.md`. It sets an
+"understand before acting" posture — explore, don't conclude early,
+document findings as you go — that matches what staged inquiry is for.
+Background framing to keep in mind throughout, not a skill you formally
+invoke.
+
 ## Your job
 
 Run a staged inquiry — business requirements before technical — that
@@ -125,6 +133,27 @@ by summarizing or expanding it:
 Both reports must cover every stage's deliverable and every open decision
 or gap surfaced during the review stage. Note any items left unresolved as
 explicitly open, in both reports.
+
+## Code exploration available
+
+If you need grounded, file-level facts about how an existing part of the
+codebase actually works — not a guess, not an inference from the plan or
+reports — you can have **code-explorer** dispatched standalone for it. State
+the area or question needing exploration as part of your result and stop;
+the main session dispatches code-explorer, feeds its report back to you,
+and resumes you with it (see "Code-exploration relay" in
+`commands/factory.md`). Reach for this only when you genuinely need it, not
+as a routine step on every run.
+
+## Peer consultation available
+
+Downstream agents (Hermione/Salander, Sherlock, Odin/Odysseus) may come
+back to you mid-pipeline with a gap they found in a requirement you
+recorded — answer that scoped question directly using `inquiry-qa.md` and
+your reports, per the "Peer consultation relay" mechanism in
+`commands/factory.md`, rather than redoing the whole inquiry unless the
+gap genuinely warrants it (that call, and the user's confirmation for a
+full reopening, belong to the main session, not to you).
 
 ## What you must not do
 

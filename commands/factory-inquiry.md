@@ -30,6 +30,15 @@ dispatched as subagents — if any of them asks the user something, follow
 the "User-input relay protocol" defined once in `commands/factory.md`:
 relay the question, get the answer, and resume the same agent.
 
+Heimdal (or hodor/aragorn) may also need **code-explorer** dispatched for
+grounded, file-level facts about existing code — follow the
+"Code-exploration relay" mechanism defined once in `commands/factory.md`:
+dispatch code-explorer standalone, feed its report back, and resume the
+same agent.
+
+Heimdal may also discover a gap in a different agent's domain — follow the
+"Peer consultation relay" mechanism defined once in `commands/factory.md`.
+
 Inquiry is the first phase in the phase order (inquiry → research →
 brainstorm → discussion → plans → test → implement), so it has no upstream
 artifact dependency to check.

@@ -31,6 +31,21 @@ agent returns question(s) instead of a final report, relay them to the
 user, get the answer, and resume the same agent (not a fresh dispatch)
 until it produces its final report.
 
+Separately, any phase agent may also need **code-explorer** dispatched for
+grounded, file-level facts about existing code — follow the
+"Code-exploration relay" mechanism defined once in `commands/factory.md`.
+This is not a user-facing question, so it applies in auto mode the same way
+it does in guided mode, for every phase, with no restriction like the one
+below.
+
+Any phase agent may also discover a gap in a different agent's domain —
+follow the "Peer consultation relay" mechanism defined once in
+`commands/factory.md`. A quick consult (step 2 of that mechanism) is not a
+user-facing question either, so it proceeds in auto mode the same way.
+**Reopening a phase (step 3) still requires pausing to ask the user**, even
+in auto mode — auto mode's no-pause rule is about routine phase hand-offs,
+not about silently redoing an earlier phase's work on an agent's own say-so.
+
 **Only heimdal may use this relay in auto mode.** Autonomous means no
 pause for the user mid-pipeline, so **heimdal (inquiry) is the only step
 in this mode allowed to ask the user anything** — inquiry is the one phase
@@ -68,8 +83,11 @@ trivial or non-trivial.
 
 Invoke **ullr** immediately to make the direct fix, carrying forward
 whatever Hodor already resolved conversationally (config values, the
-request itself). Once Ullr finishes, the pipeline is complete. There is
-nothing to confirm onward to — report Ullr's result to the user and stop.
+request itself). Once Ullr finishes, invoke **mimir** immediately (see
+"Memory available" in `commands/factory.md`) to harvest a wiki entry from
+Ullr's report if the write gate warrants one. Once Mimir finishes, the
+pipeline is complete — report both Ullr's result and Mimir's
+write-or-suppress outcome to the user and stop.
 
 ## Step 1: invoke Aragorn
 
@@ -134,8 +152,11 @@ the next with no pause and no skip option.
    skill) — writes `<path>/implementation-log.md`.
 8. **l** (Pass 2: evaluates Gru's implementation) — writes
    `<path>/test-report.md`.
+9. **mimir** — runs terminally, immediately, with no pause (see "Memory
+   available" in `commands/factory.md`), harvesting from
+   `implementation-log.md`, `test-report.md`, and `evaluation-report.md`.
 
-After step 8, the phase-road sequence for this `<path>` is complete.
+After step 9, the phase-road sequence for this `<path>` is complete.
 
 ## Workflow-road
 
@@ -149,8 +170,9 @@ system decomposes into — their names, scope, and dependency order.
 
 **Workflow-road stops there**, even in this autonomous mode. It does not
 go deep into any individual feature, and it does not run the phase-road
-sequence per feature itself. Steps 6–8 never run at the system level, and
-no feature run is launched automatically. Once odin's plan is written,
+sequence per feature itself. Steps 6–9 never run at the system level —
+Mimir is not dispatched, since no implementation occurred and there is
+nothing to harvest — and no feature run is launched automatically. Once odin's plan is written,
 report it to the user — the features it identified, their resolved
 `<folder-name>/<system-name>/<phase-name>/` paths, and the recommended
 order — then go to "After the system-level plan" below.
@@ -211,10 +233,11 @@ For every invocation in this command:
 - Do not pause for confirmation between any two phases, on either road.
 - Do not offer the user a skip option for any phase — every phase always
   runs in this mode.
-- Do not run L, Gru, or L Pass 2 as part of a workflow-road system-level
-  pass — workflow-road stops after odin's plan; implementation only
-  happens in a phase-road run (standalone, or started later against one
-  of the identified feature paths).
+- Do not run L, Gru, L Pass 2, or Mimir as part of a workflow-road
+  system-level pass — workflow-road stops after odin's plan;
+  implementation only happens in a phase-road run (standalone, or started
+  later against one of the identified feature paths), and Mimir is not
+  dispatched when there is no implementation to harvest.
 - Do not re-implement askeladd's re-entry/carry-forward detection logic in
   this command — just re-invoke askeladd and let it handle it.
 - Do not use hermione/odin at the feature level or salander/odysseus at

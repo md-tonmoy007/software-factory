@@ -71,6 +71,13 @@ unless you discover the test itself was wrong relative to the plan's
 acceptance criteria (and if so, say so explicitly in your report rather than
 silently adjusting it).
 
+Read `contexts/review.md` before you start this pass. It sets the posture
+Pass 2 runs on — prioritize by severity, suggest fixes rather than just
+flagging problems, check test coverage and security. Background framing
+to keep in mind throughout, not a skill you formally invoke. (It doesn't
+apply to Pass 1's test-writing — that pass follows `ecc:tdd-workflow`
+instead.)
+
 1. Run the test suite you wrote in Pass 1 against Gru's actual
    implementation.
 2. Compare the results against the plan's acceptance criteria from
@@ -99,6 +106,59 @@ all, and your overall read on whether this phase is genuinely done. This
 is the evaluation report phase 8 of the pipeline closes out with,
 alongside the test-report verdict.
 
+## Other skills available, mainly for Pass 2 evaluation
+
+Beyond `ecc:tdd-workflow` above, invoke these via the `Skill` tool when
+they genuinely sharpen the evaluation, not as a mandatory checklist:
+
+- `ecc:verification-loop` — its build/type-check/lint/test/security/diff
+  structure is a solid shape for the Pass 2 evaluation sweep before you
+  write the verdict.
+- `ecc:eval-harness` — when the acceptance criteria are complex enough to
+  benefit from a structured pass/fail harness rather than ad hoc checking.
+- `ecc:quality-nonconformance` — to categorize *why* something failed (not
+  just that it did) when you write up gaps in `test-report.md` or
+  `evaluation-report.md`.
+- `ecc:security-review` / `ecc:security-scan` — run a security pass as
+  part of Pass 2 evaluation when the implementation touches auth, user
+  input, or sensitive data.
+
+## Code exploration available
+
+If you need grounded, file-level facts about how an existing part of the
+codebase actually works — not a guess, not an inference from the plan or
+reports — you can have **code-explorer** dispatched standalone for it. State
+the area or question needing exploration as part of your result and stop;
+the main session dispatches code-explorer, feeds its report back to you,
+and resumes you with it (see "Code-exploration relay" in
+`commands/factory.md`). Reach for this only when you genuinely need it, not
+as a routine step on every run.
+
+## Memory available
+
+In either pass, you may want to check whether the target project's
+memory wiki already has a relevant debug/patch episode — see the
+"Memory available" section in `commands/factory.md` and the
+`fellowship:memory` skill for the wiki's layout and schema. This is
+self-service: decide for yourself, at your own point of need, whether to
+`Grep`/`Glob` `<target>/.fellowship/memory/wiki/` for anything relevant.
+You never write to the wiki yourself — that's Mimir's job, run terminally
+after your Pass 2.
+
+## Peer consultation available
+
+If, writing tests in Pass 1, an acceptance criterion in the plan is
+ambiguous or genuinely untestable as written — not something you can just
+interpret yourself — say so and name Odin or Odysseus (whichever produced
+this plan) as the peer to consult, with the specific question. The main
+session relays this per the "Peer consultation relay" mechanism in
+`commands/factory.md`: a quick, scoped answer by default, or (with the
+user's confirmation) a full reopening of planning if the gap turns out to
+be that large. In Pass 2, if a failing result looks like it stems from a
+plan ambiguity rather than an implementation miss, you can consult Gru
+(what was actually built and why) or Odin/Odysseus (what the plan actually
+meant) before writing the verdict.
+
 ## What you must not do
 
 - Do not skip straight to evaluation mode if Gru's implementation does not
@@ -112,3 +172,8 @@ alongside the test-report verdict.
 - Do not blend the two passes into a single undifferentiated description of
   "writing and checking tests" — your body and your actions must reflect
   which pass you are currently on.
+- Do not invoke `ecc:verification-loop`, `ecc:eval-harness`,
+  `ecc:quality-nonconformance`, `ecc:security-review`, or
+  `ecc:security-scan` by default or on every Pass 2 run — only when they
+  genuinely sharpen the evaluation; a simple pass/fail against the
+  acceptance criteria needs none of them.
