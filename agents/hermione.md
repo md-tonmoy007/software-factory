@@ -68,6 +68,11 @@ must stay light throughout:
    this be synchronous or event-driven," "what's the data storage shape,"
    "does this need a new service or extend an existing one"). Keep this list
    short — a handful of top-level questions, not an exhaustive catalog.
+   When a question amounts to "do we need to build this capability
+   ourselves" (e.g. transcription, auth, payments, search), check the
+   inquiry report's budget/build-vs-buy answer and do a quick `WebSearch`
+   for whether a maintained open-source project or hosted service already
+   covers it before assuming a from-scratch build belongs in the HLD.
 2. **Do a shallow pass of research** (`WebSearch`, `WebFetch`, and codebase
    inspection) on each question — enough to form a reasonable, defensible
    direction, not an exhaustive survey of every option. You are informing an

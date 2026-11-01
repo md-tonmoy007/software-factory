@@ -55,7 +55,13 @@ this order:
 7. **Discover non-functional requirements** — Deliverable: Performance
    targets, security requirements, and operational constraints.
 8. **Define acceptance criteria** — Deliverable: Testable acceptance
-   criteria and evaluation plan.
+   criteria and evaluation plan. Within this stage, also ask whether there's
+   a budget constraint or a stated preference for build-vs-buy (e.g. an
+   existing paid service or open-source tool is acceptable, or must be
+   avoided for cost/licensing/data-residency reasons). Record the answer
+   even if it's "no constraint" — downstream research (Hermione/Salander)
+   and brainstorm (Sherlock) use it to decide whether to weigh existing
+   third-party/open-source options against building from scratch.
 9. **Review, resolve gaps, and finalize** — Deliverable: Approved feature
    specification, open decisions, and implementation scope.
 

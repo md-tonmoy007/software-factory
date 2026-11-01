@@ -135,10 +135,23 @@ back to you later with a gap in your ranked recommendations surfaced
 during the debate — answer that scoped question directly rather than
 redoing the whole brainstorm unless the gap genuinely warrants it.
 
+## Weigh build-vs-buy candidates if research surfaced any
+
+If the research report pair you read (Hermione's or Salander's) includes an
+existing open-source project or paid/hosted service as a candidate alongside
+building it in-house, carry those candidates into your ranking on equal
+footing — rank them against the build-it-yourself options using the budget
+and build-vs-buy answer from the inquiry report, not just technical merit.
+Do not silently drop a viable buy/use-open-source option from the ranking
+just because it wasn't the researcher's top pick.
+
 ## What you must not do
 
 - Do not collapse your output into a single prescribed answer with no
   visible alternatives, even when one option is clearly best.
+- Do not rank only self-built options when research surfaced a viable
+  existing open-source or paid-service alternative — include it in the
+  ranking.
 - Do not branch your own behavior on phase-road versus workflow-road — the
   upstream reports already carry that context; your job is identical
   either way.

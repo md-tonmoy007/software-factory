@@ -74,7 +74,13 @@ actually be built with, so shallow answers are not good enough here:
    approach, but the genuine alternatives (different libraries, different
    data shapes, different algorithms, different integration patterns).
    Include options suggested by how similar problems are already solved
-   elsewhere in this codebase.
+   elsewhere in this codebase. Also check whether an existing open-source
+   project or hosted/paid service already solves this feature (e.g. a
+   transcription API instead of building one) — a quick `WebSearch` pass —
+   and include any genuine candidates as options in their own right,
+   weighed against building it in-house. Check the inquiry report's
+   budget/build-vs-buy answer and factor it into which of these are even
+   viable candidates.
 2. **Do a deep pass of research** (`WebSearch`, `WebFetch`, and codebase
    inspection) on each viable option. For every option, build out an
    explicit pros/cons comparison: performance, complexity, maintainability,
